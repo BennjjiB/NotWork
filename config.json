@@ -1,0 +1,31 @@
+{
+  "tokenStandard": "nft",
+  "number": 16,
+  "symbol": "NUMBERS",
+  "sellerFeeBasisPoints": 500,
+  "isMutable": true,
+  "isSequential": false,
+  "creators": [
+    {
+      "address": "Cd1u6xbZNND8tr3T7H5u2MW7KRxCHw2n1QtcHUMqUBmh",
+      "share": 100
+    }
+  ],
+  "uploadMethod": "bundlr",
+  "ruleSet": null,
+  "awsConfig": null,
+  "sdriveApiKey": null,
+  "nftStorageAuthToken": null,
+  "shdwStorageAccount": null,
+  "pinataConfig": null,
+  "hiddenSettings": null,
+  "guards": {
+    "default": {
+      "solPayment": {
+        "value": 0.01,
+        "destination": "Cd1u6xbZNND8tr3T7H5u2MW7KRxCHw2n1QtcHUMqUBmh"
+      }
+    }
+  },
+  "maxEditionSupply": null
+}
