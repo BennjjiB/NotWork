@@ -1,10 +1,10 @@
 {
   "tokenStandard": "nft",
-  "number": 16,
-  "symbol": "NUMBERS",
+  "number": 1000,
+  "symbol": "OT",
   "sellerFeeBasisPoints": 500,
   "isMutable": true,
-  "isSequential": false,
+  "isSequential": true,
   "creators": [
     {
       "address": "Cd1u6xbZNND8tr3T7H5u2MW7KRxCHw2n1QtcHUMqUBmh",
@@ -18,14 +18,11 @@
   "nftStorageAuthToken": null,
   "shdwStorageAccount": null,
   "pinataConfig": null,
-  "hiddenSettings": null,
-  "guards": {
-    "default": {
-      "solPayment": {
-        "value": 0.01,
-        "destination": "Cd1u6xbZNND8tr3T7H5u2MW7KRxCHw2n1QtcHUMqUBmh"
-      }
-    }
+  "hiddenSettings": {
+    "name": "Knight's Chest $ID+1$",
+    "uri": "https://arweave.net/03aFbL7UG7Is0jNbrySeUhLP60hKFq3IXsrmRj3uLhI",
+    "hash": "FcwiHHnJbA3FwfsFPtXukwANfozknTy9"
   },
+  "guards": null,
   "maxEditionSupply": null
 }

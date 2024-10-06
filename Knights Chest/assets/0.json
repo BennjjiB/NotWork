@@ -1,0 +1,34 @@
+{
+  "name": "Knight's Chest",
+  "symbol": "OT",
+  "image": "https://media.discordapp.net/attachments/1291038270112792627/1292492823748149318/Subheading_67.png?ex=6703ef3e&is=67029dbe&hm=da623fd259350aa075030298bafa9aed63540c7b48704acb0d7fcf4711995401&=&format=webp&quality=lossless",
+  "description": "A knight chest",
+  "seller_fee_basis_points": 500,
+  "properties": {
+    "files": [
+      {
+        "uri": "https://media.discordapp.net/attachments/1291038270112792627/1292492823748149318/Subheading_67.png?ex=6703ef3e&is=67029dbe&hm=da623fd259350aa075030298bafa9aed63540c7b48704acb0d7fcf4711995401&=&format=webp&quality=lossless",
+        "type": "image/png"
+      }
+    ],
+    "category": "image"
+  },
+  "attributes": [
+    {
+      "trait_type": "\"Birth of Otium\" Card Packs",
+      "value": "2"
+    },
+    {
+      "trait_type": "Card Pack",
+      "value": "Knight"
+    },
+    {
+      "trait_type": "Item",
+      "value": "Otium Sword"
+    },
+    {
+      "trait_type": "Extra Card",
+      "value": "Uncommon to Mythic"
+    }
+  ]
+}
