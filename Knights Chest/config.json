@@ -2,7 +2,7 @@
   "tokenStandard": "nft",
   "number": 1000,
   "symbol": "OT",
-  "sellerFeeBasisPoints": 500,
+  "sellerFeeBasisPoints": 0,
   "isMutable": true,
   "isSequential": true,
   "creators": [
@@ -20,8 +20,8 @@
   "pinataConfig": null,
   "hiddenSettings": {
     "name": "Knight's Chest $ID+1$",
-    "uri": "https://arweave.net/03aFbL7UG7Is0jNbrySeUhLP60hKFq3IXsrmRj3uLhI",
-    "hash": "FcwiHHnJbA3FwfsFPtXukwANfozknTy9"
+    "uri": "https://drive.google.com/uc?export=download&id=1-BQzj6TGPtDCs0mxWwTW7ETO7CqfKZQO",
+    "hash": "Ce2aCCrucHNCWN1nRezD3yJki2smXzkk"
   },
   "guards": null,
   "maxEditionSupply": null

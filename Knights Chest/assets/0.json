@@ -1,34 +1,43 @@
 {
   "name": "Knight's Chest",
-  "symbol": "OT",
-  "image": "https://media.discordapp.net/attachments/1291038270112792627/1292492823748149318/Subheading_67.png?ex=6703ef3e&is=67029dbe&hm=da623fd259350aa075030298bafa9aed63540c7b48704acb0d7fcf4711995401&=&format=webp&quality=lossless",
+  "image": "https://drive.google.com/uc?export=view&id=1xobQciKrgsopMs5fdgEInjat-WrMDnpC",
+  "animation_url": "",
   "description": "A knight chest",
-  "seller_fee_basis_points": 500,
+  "seller_fee_basis_points": 0,
+  "external_url": "https://playotium.com",
   "properties": {
     "files": [
       {
-        "uri": "https://media.discordapp.net/attachments/1291038270112792627/1292492823748149318/Subheading_67.png?ex=6703ef3e&is=67029dbe&hm=da623fd259350aa075030298bafa9aed63540c7b48704acb0d7fcf4711995401&=&format=webp&quality=lossless",
-        "type": "image/png"
+        "uri": "https://drive.google.com/uc?export=view&id=1xobQciKrgsopMs5fdgEInjat-WrMDnpC",
+        "type": "image/gif"
       }
     ],
     "category": "image"
   },
   "attributes": [
     {
-      "trait_type": "\"Birth of Otium\" Card Packs",
-      "value": "2"
-    },
-    {
-      "trait_type": "Card Pack",
+      "trait_type": "Type",
       "value": "Knight"
     },
     {
-      "trait_type": "Item",
+      "trait_type": "Card Packs",
+      "value": "2"
+    },
+    {
+      "trait_type": "Cardback",
+      "value": "Knight"
+    },
+    {
+      "trait_type": "Relics",
       "value": "Otium Sword"
     },
     {
-      "trait_type": "Extra Card",
-      "value": "Uncommon to Mythic"
+      "trait_type": "Mythical Card Chance",
+      "value": "Low"
+    },
+    {
+      "trait_type": "Version",
+      "value": "0"
     }
   ]
 }
