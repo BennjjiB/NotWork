@@ -23,6 +23,34 @@
     "uri": "https://drive.google.com/uc?export=download&id=1-BQzj6TGPtDCs0mxWwTW7ETO7CqfKZQO",
     "hash": "Ce2aCCrucHNCWN1nRezD3yJki2smXzkk"
   },
-  "guards": null,
+  "guards": {
+    "default": {
+      "botTax": null,
+      "solPayment": {
+        "value": 0.01,
+        "destination": "Cd1u6xbZNND8tr3T7H5u2MW7KRxCHw2n1QtcHUMqUBmh"
+      },
+      "tokenPayment": null,
+      "startDate": null,
+      "thirdPartySigner": null,
+      "tokenGate": null,
+      "gatekeeper": null,
+      "endDate": null,
+      "allowList": null,
+      "mintLimit": null,
+      "nftPayment": null,
+      "redeemedAmount": null,
+      "addressGate": null,
+      "nftGate": null,
+      "nftBurn": null,
+      "tokenBurn": null,
+      "freezeSolPayment": null,
+      "freezeTokenPayment": null,
+      "programGate": null,
+      "allocation": null,
+      "token2022Payment": null
+    },
+    "groups": null
+  },
   "maxEditionSupply": null
 }
