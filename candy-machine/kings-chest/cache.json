@@ -1,0 +1,26 @@
+{
+  "program": {
+    "candyMachine": "HTydktcJF5nx5d1GEC5wxmxryAmgxem6idqF2cwPVcPh",
+    "candyGuard": "",
+    "candyMachineCreator": "EPtNwHkkCjo8WSWASbBVEozHH21jWkv19JXf73PmvXcq",
+    "collectionMint": "AWgQqu29H17ufeQt6fJT6obwD3HcFeqdW9cHt1x1Bj3G"
+  },
+  "items": {
+    "-1": {
+      "name": "Otium Founder Chests",
+      "image_hash": "03de0b7a05762288ae8d2f9b119c0878986295621eac57a15ee6230e040e6ba7",
+      "image_link": "https://cdn.impossibleimages.ai/wp-content/uploads/2023/04/20204432/ydWwGSS6zkib8RgkYpkxTF14bIuHKKNH49YrkSiqgMXz9aFjk4-1500x1500.jpg",
+      "metadata_hash": "1947989c749329112a82b0e98643a5da7b91acff3ceab1ec3611e892204e183c",
+      "metadata_link": "https://drive.google.com/uc?export=download&id=1VvAB-vgLQPCSZ_fEB7RoDRMKbtAh0yov",
+      "onChain": true
+    },
+    "0": {
+      "name": "Kings's Chest",
+      "image_hash": "32c79709b437f85555f751046971702368b5c2caf1f67873125b4f341420a365",
+      "image_link": "https://drive.google.com/uc?export=view&id=1PU2N_SxUREZnLT6cGbEJCp_tQrC4r0io",
+      "metadata_hash": "3df02c0fbc246324048a87c6cecac9353765307cc9425ae73ea9f6efcadace01",
+      "metadata_link": "https://drive.google.com/uc?export=download&id=1-BQzj6TGPtDCs0mxWwTW7ETO7CqfKZQO",
+      "onChain": false
+    }
+  }
+}
