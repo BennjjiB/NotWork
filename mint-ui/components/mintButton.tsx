@@ -3,7 +3,7 @@ import {
   CandyMachine,
   mintV2,
 } from "@metaplex-foundation/mpl-candy-machine";
-import { GuardReturn } from "../utils/checkerHelper";
+import {GuardReturn} from "../utils/checkerHelper";
 import {
   AddressLookupTableInput,
   KeypairSigner,
@@ -27,7 +27,7 @@ import {
   fetchDigitalAsset,
   fetchJsonMetadata,
 } from "@metaplex-foundation/mpl-token-metadata";
-import { mintText } from "../settings";
+import {mintText} from "../settings";
 import {
   Box,
   Button,
@@ -38,18 +38,12 @@ import {
   Text,
   Tooltip,
   NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  VStack,
-  Divider,
-  createStandaloneToast,
+  VStack
 } from "@chakra-ui/react";
 import {
   fetchAddressLookupTable, setComputeUnitPrice,
 } from "@metaplex-foundation/mpl-toolbox";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {
   chooseGuardToUse,
   routeBuilder,
@@ -58,9 +52,9 @@ import {
   buildTx,
   getRequiredCU,
 } from "../utils/mintHelper";
-import { useSolanaTime } from "@/utils/SolanaTimeContext";
-import { verifyTx } from "@/utils/verifyTx";
-import { base58 } from "@metaplex-foundation/umi/serializers";
+import {useSolanaTime} from "@/utils/SolanaTimeContext";
+import {verifyTx} from "@/utils/verifyTx";
+import {base58} from "@metaplex-foundation/umi/serializers";
 
 const updateLoadingText = (
   loadingText: string | undefined,
@@ -89,16 +83,9 @@ const fetchNft = async (
     jsonMetadata = await fetchJsonMetadata(umi, digitalAsset.metadata.uri);
   } catch (e) {
     console.error(e);
-    createStandaloneToast().toast({
-      title: "Nft could not be fetched!",
-      description: "Please check your Wallet instead.",
-      status: "info",
-      duration: 900,
-      isClosable: true,
-    });
   }
 
-  return { digitalAsset, jsonMetadata };
+  return {digitalAsset, jsonMetadata};
 };
 
 const mintClick = async (
@@ -110,9 +97,9 @@ const mintClick = async (
   mintAmount: number,
   mintsCreated:
     | {
-        mint: PublicKey;
-        offChainMetadata: JsonMetadata | undefined;
-      }[]
+    mint: PublicKey;
+    offChainMetadata: JsonMetadata | undefined;
+  }[]
     | undefined,
   setMintsCreated: Dispatch<
     SetStateAction<
@@ -132,9 +119,9 @@ const mintClick = async (
   }
 
   let buyBeer = true;
-  console.log("buyBeer",process.env.NEXT_PUBLIC_BUYMARKBEER )
+  console.log("buyBeer", process.env.NEXT_PUBLIC_BUYMARKBEER)
 
-  if (process.env.NEXT_PUBLIC_BUYMARKBEER  === "false") {
+  if (process.env.NEXT_PUBLIC_BUYMARKBEER === "false") {
     buyBeer = false;
     console.log("The Creator does not want to pay for MarkSackerbergs beer 😒");
   }
@@ -152,33 +139,25 @@ const mintClick = async (
 
     let routeBuild = await routeBuilder(umi, guardToUse, candyMachine);
     if (routeBuild && routeBuild.items.length > 0) {
-      createStandaloneToast().toast({
-        title: "Allowlist detected. Please sign to be approved to mint.",
-        status: "info",
-        duration: 900,
-        isClosable: true,
-      });
-      routeBuild = routeBuild.prepend(setComputeUnitPrice(umi, { microLamports: parseInt(process.env.NEXT_PUBLIC_MICROLAMPORTS ?? "1001") }));
+      routeBuild = routeBuild.prepend(setComputeUnitPrice(umi, {microLamports: parseInt(process.env.NEXT_PUBLIC_MICROLAMPORTS ?? "1001")}));
       const latestBlockhash = await umi.rpc.getLatestBlockhash({commitment: "finalized"});
       routeBuild = routeBuild.setBlockhash(latestBlockhash)
       const builtTx = await routeBuild.buildAndSign(umi);
       const sig = await umi.rpc
-        .sendTransaction(builtTx, { skipPreflight:true, maxRetries: 1, preflightCommitment: "finalized", commitment: "finalized" })
+        .sendTransaction(builtTx, {
+          skipPreflight: true,
+          maxRetries: 1,
+          preflightCommitment: "finalized",
+          commitment: "finalized"
+        })
         .then((signature) => {
-          return { status: "fulfilled", value: signature };
+          return {status: "fulfilled", value: signature};
         })
         .catch((error) => {
-          createStandaloneToast().toast({
-            title: "Allow List TX failed!",
-            status: "error",
-            duration: 900,
-            isClosable: true,
-          });
-          return { status: "rejected", reason: error, value: new Uint8Array };
-
+          return {status: "rejected", reason: error, value: new Uint8Array};
         });
-        if (sig.status === "fulfilled")
-          await verifyTx(umi, [sig.value], latestBlockhash, "finalized");
+      if (sig.status === "fulfilled")
+        await verifyTx(umi, [sig.value], latestBlockhash, "finalized");
 
     }
 
@@ -190,19 +169,13 @@ const mintClick = async (
       const fetchedLut = await fetchAddressLookupTable(umi, lutPubKey);
       tables = [fetchedLut];
     } else {
-      createStandaloneToast().toast({
-        title: "The developer should really set a lookup table!",
-        status: "warning",
-        duration: 900,
-        isClosable: true,
-      });
     }
 
     const mintTxs: Transaction[] = [];
     let nftsigners = [] as KeypairSigner[];
 
     const latestBlockhash = (await umi.rpc.getLatestBlockhash({commitment: "finalized"}));
-    
+
     const mintArgs = mintArgsBuilder(candyMachine, guardToUse, ownedTokens);
     const nftMint = generateSigner(umi);
     const txForSimulation = buildTx(
@@ -252,10 +225,15 @@ const mintClick = async (
 
     let signatures: Uint8Array[] = [];
     let amountSent = 0;
-    
+
     const sendPromises = signedTransactions.map((tx, index) => {
       return umi.rpc
-        .sendTransaction(tx, { skipPreflight:true, maxRetries: 1, preflightCommitment: "finalized", commitment: "finalized" })
+        .sendTransaction(tx, {
+          skipPreflight: true,
+          maxRetries: 1,
+          preflightCommitment: "finalized",
+          commitment: "finalized"
+        })
         .then((signature) => {
           console.log(
             `Transaction ${index + 1} resolved with signature: ${
@@ -264,11 +242,11 @@ const mintClick = async (
           );
           amountSent = amountSent + 1;
           signatures.push(signature);
-          return { status: "fulfilled", value: signature };
+          return {status: "fulfilled", value: signature};
         })
         .catch((error) => {
           console.error(`Transaction ${index + 1} failed:`, error);
-          return { status: "rejected", reason: error };
+          return {status: "rejected", reason: error};
         });
     });
 
@@ -285,12 +263,6 @@ const mintClick = async (
       setGuardList
     );
 
-    createStandaloneToast().toast({
-      title: `${signedTransactions.length} Transaction(s) sent!`,
-      status: "success",
-      duration: 3000,
-    });
-    
     const successfulMints = await verifyTx(umi, signatures, latestBlockhash, "finalized");
 
     updateLoadingText(
@@ -325,18 +297,11 @@ const mintClick = async (
 
     // Update mintsCreated only if there are new mints
     if (newMintsCreated.length > 0) {
-        setMintsCreated(newMintsCreated);
-        onOpen();
+      setMintsCreated(newMintsCreated);
+      onOpen();
     }
   } catch (e) {
     console.error(`minting failed because of ${e}`);
-    createStandaloneToast().toast({
-      title: "Your mint failed!",
-      description: "Please try again.",
-      status: "error",
-      duration: 900,
-      isClosable: true,
-    });
   } finally {
     //find the guard by guardToUse.label and set minting to true
     const guardIndex = guardList.findIndex((g) => g.label === guardToUse.label);
@@ -353,10 +318,10 @@ const mintClick = async (
 };
 // new component called timer that calculates the remaining Time based on the bigint solana time and the bigint toTime difference.
 const Timer = ({
-  solanaTime,
-  toTime,
-  setCheckEligibility,
-}: {
+                 solanaTime,
+                 toTime,
+                 setCheckEligibility,
+               }: {
   solanaTime: bigint;
   toTime: bigint;
   setCheckEligibility: Dispatch<SetStateAction<boolean>>;
@@ -456,9 +421,9 @@ type Props = {
   setGuardList: Dispatch<SetStateAction<GuardReturn[]>>;
   mintsCreated:
     | {
-        mint: PublicKey;
-        offChainMetadata: JsonMetadata | undefined;
-      }[]
+    mint: PublicKey;
+    offChainMetadata: JsonMetadata | undefined;
+  }[]
     | undefined;
   setMintsCreated: Dispatch<
     SetStateAction<
@@ -471,17 +436,17 @@ type Props = {
 };
 
 export function ButtonList({
-  umi,
-  guardList,
-  candyMachine,
-  candyGuard,
-  ownedTokens = [], // provide default empty array
-  setGuardList,
-  mintsCreated,
-  setMintsCreated,
-  onOpen,
-  setCheckEligibility,
-}: Props): JSX.Element {
+                             umi,
+                             guardList,
+                             candyMachine,
+                             candyGuard,
+                             ownedTokens = [], // provide default empty array
+                             setGuardList,
+                             mintsCreated,
+                             setMintsCreated,
+                             onOpen,
+                             setCheckEligibility,
+                           }: Props): JSX.Element {
   const solanaTime = useSolanaTime();
   const [numberInputValues, setNumberInputValues] = useState<{
     [label: string]: number;
@@ -491,7 +456,7 @@ export function ButtonList({
   }
 
   const handleNumberInputChange = (label: string, value: number) => {
-    setNumberInputValues((prev) => ({ ...prev, [label]: value }));
+    setNumberInputValues((prev) => ({...prev, [label]: value}));
   };
 
   // remove duplicates from guardList
@@ -541,7 +506,6 @@ export function ButtonList({
 
   const listItems = buttonGuardList.map((buttonGuard, index) => (
     <Box key={index} marginTop={"20px"}>
-      <Divider my="10px" />
       <HStack>
         <Heading size="xs" textTransform="uppercase">
           {buttonGuard.header}
@@ -579,66 +543,35 @@ export function ButtonList({
             )}
         </Flex>
       </HStack>
-      <SimpleGrid columns={2} spacing={5}>
-        <Text pt="2" fontSize="sm">
-          {buttonGuard.mintText}
-        </Text>
-        <VStack>
-          {process.env.NEXT_PUBLIC_MULTIMINT && buttonGuard.allowed ? (
-            <NumberInput
-              value={numberInputValues[buttonGuard.label] || 1}
-              min={1}
-              max={buttonGuard.maxAmount < 1 ? 1 : buttonGuard.maxAmount}
-              size="sm"
-              isDisabled={!buttonGuard.allowed}
-              onChange={(valueAsString, valueAsNumber) =>
-                handleNumberInputChange(buttonGuard.label, valueAsNumber)
-              }
-            >
-              <NumberInputField />
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
-          ) : null}
-
-          <Tooltip label={buttonGuard.tooltip} aria-label="Mint button">
-            <Button
-              onClick={() =>
-                mintClick(
-                  umi,
-                  buttonGuard,
-                  candyMachine,
-                  candyGuard,
-                  ownedTokens,
-                  numberInputValues[buttonGuard.label] || 1,
-                  mintsCreated,
-                  setMintsCreated,
-                  guardList,
-                  setGuardList,
-                  onOpen,
-                  setCheckEligibility
-                )
-              }
-              key={buttonGuard.label}
-              size="sm"
-              backgroundColor="teal.100"
-              isDisabled={!buttonGuard.allowed}
-              isLoading={
-                guardList.find((elem) => elem.label === buttonGuard.label)
-                  ?.minting
-              }
-              loadingText={
-                guardList.find((elem) => elem.label === buttonGuard.label)
-                  ?.loadingText
-              }
-            >
-              {buttonGuard.buttonLabel}
-            </Button>
-          </Tooltip>
-        </VStack>
-      </SimpleGrid>
+      <Text pt="2" fontSize="sm">
+        {buttonGuard.mintText}
+      </Text>
+      <VStack>
+        <Button
+          onClick={() =>
+            mintClick(
+              umi,
+              buttonGuard,
+              candyMachine,
+              candyGuard,
+              ownedTokens,
+              numberInputValues[buttonGuard.label] || 1,
+              mintsCreated,
+              setMintsCreated,
+              guardList,
+              setGuardList,
+              onOpen,
+              setCheckEligibility
+            )
+          }
+          key={buttonGuard.label}
+          size="sm"
+          backgroundColor="teal.100"
+          disabled={!buttonGuard.allowed}
+        >
+          {buttonGuard.buttonLabel}
+        </Button>
+      </VStack>
     </Box>
   ));
 

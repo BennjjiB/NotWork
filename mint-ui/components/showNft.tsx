@@ -1,6 +1,6 @@
-import { JsonMetadata } from "@metaplex-foundation/mpl-token-metadata";
-import { PublicKey } from "@metaplex-foundation/umi";
-import { Box, Text, Divider, SimpleGrid, VStack } from "@chakra-ui/react";
+import {JsonMetadata} from "@metaplex-foundation/mpl-token-metadata";
+import {PublicKey} from "@metaplex-foundation/umi";
+import {Box, Text, Divider, SimpleGrid, VStack} from "@chakra-ui/react";
 import React from "react";
 import {
   Accordion,
@@ -18,7 +18,8 @@ interface TraitProps {
 interface TraitsProps {
   metadata: JsonMetadata;
 }
-const Trait = ({ heading, description }: TraitProps) => {
+
+const Trait = ({heading, description}: TraitProps) => {
   return (
     <Box
       backgroundColor={"#ebebeb"}
@@ -36,7 +37,7 @@ const Trait = ({ heading, description }: TraitProps) => {
   );
 };
 
-const Traits = ({ metadata }: TraitsProps) => {
+const Traits = ({metadata}: TraitsProps) => {
   if (metadata === undefined || metadata.attributes === undefined) {
     return <></>;
   }
@@ -55,7 +56,7 @@ const Traits = ({ metadata }: TraitsProps) => {
 
   return (
     <>
-      <Divider marginTop={"15px"} />
+      <Divider marginTop={"15px"}/>
       <SimpleGrid marginTop={"15px"} columns={3} spacing={5}>
         {traitList}
       </SimpleGrid>
@@ -64,8 +65,8 @@ const Traits = ({ metadata }: TraitsProps) => {
 };
 
 export default function Card({
-  metadata,
-}: {
+                               metadata,
+                             }: {
   metadata: JsonMetadata | undefined;
 }) {
   // Get the images from the metadata if animation_url is present use this
@@ -88,7 +89,7 @@ export default function Card({
         {metadata.name}
       </Text>
       <Text>{metadata.description}</Text>
-      <Traits metadata={metadata} />
+      <Traits metadata={metadata}/>
     </Box>
   );
 }
@@ -99,7 +100,7 @@ type Props = {
     | undefined;
 };
 
-export const ShowNft = ({ nfts }: Props) => {
+export const ShowNft = ({nfts}: Props) => {
   if (nfts === undefined) {
     return <></>;
   }
@@ -111,16 +112,16 @@ export const ShowNft = ({ nfts }: Props) => {
           <Box as="span" flex="1" textAlign="left">
             {nft.offChainMetadata?.name}
           </Box>
-          <AccordionIcon />
+          <AccordionIcon/>
         </AccordionButton>
       </h2>
       <AccordionPanel pb={4}>
-        <Card metadata={nft.offChainMetadata} key={nft.mint} />
+        <Card metadata={nft.offChainMetadata} key={nft.mint}/>
       </AccordionPanel>
     </AccordionItem>
   ));
   return (
-    <Accordion defaultIndex={[0]} allowMultiple={true} >
+    <Accordion defaultIndex={[0]} allowMultiple={true}>
       {cards}
     </Accordion>
   );
