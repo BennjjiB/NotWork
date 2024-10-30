@@ -35,7 +35,7 @@ import {
   Separator,
   VStack,
   Flex,
-  StackSeparator, HStack, NumberInput
+  StackSeparator, HStack, NumberInput, For
 } from '@chakra-ui/react';
 import {ButtonList} from "@/components/mintButton";
 import {GuardReturn} from "@/utils/checkerHelper";
@@ -45,10 +45,12 @@ import NextImage from 'next/image'
 import {useSolanaTime} from "@/utils/SolanaTimeContext";
 import {WalletMultiButton} from "@solana/wallet-adapter-react-ui";
 import '@solana/wallet-adapter-react-ui/styles.css';
+import crystal from 'assets/Crystal.png';
 import lord_chest_image from 'assets/Lords_Chest.png';
 import {md} from "node-forge";
 import {AppProps} from "next/app";
 import {StepperInput} from "@/components/ui/stepper-input";
+import {Tag} from "@/components/ui/tag";
 
 // Fetches candy machines and guards
 const fetchCandyMachineAndGuard = (
@@ -281,13 +283,17 @@ export default function Home() {
 
   const PageContent = () => {
     return (
-      <VStack>
-        <Heading size="6xl" className={styles.goldEffect}>Secure your Founder Chest</Heading>
-        <Text textAlign="center">Prepare to immerse yourself in the thrilling world of Otium with our exclusive
-          presale! <br/>
-          For a limited time you have the chance to purchase three unique tiers of chests, each brimming with powerful
-          items.</Text>
-        <HStack>
+      <VStack gap="3rem">
+        <VStack gap="1rem">
+          <Heading textStyle="6xl" className={styles.goldEffect}>Secure your Founder Chest</Heading>
+          <Text textAlign="center">
+            Prepare to immerse yourself in the thrilling world of Otium with our exclusive presale! <br/>
+            For a limited time you have the chance to purchase three unique tiers of chests, each brimming with powerful
+            items.
+          </Text>
+        </VStack>
+
+        <HStack gap="4rem" h="100%">
           <Detail></Detail>
           <MintContent></MintContent>
         </HStack>
@@ -297,39 +303,53 @@ export default function Home() {
 
   const Detail = () => {
     return (
-      <VStack>
-        <Image asChild>
-          <NextImage src={lord_chest_image} alt="..."/>
+      <VStack h="100%" flex="0.7" gap="0">
+        <Image asChild h="100%">
+          <NextImage src={crystal} alt="..."/>
         </Image>
-        <Heading size="3xl" className={styles.goldEffect}>Mythical Gem</Heading>
-        <Text textAlign="center">Receive a random card with the chances of mythical. You will always receive at least a
-          rare card.</Text>
+        <VStack gap="0.5rem">
+          <Heading size="3xl" className={styles.goldEffect}>Mythical Gem</Heading>
+          <Text textAlign="center">
+            Receive a random card with the chances of mythical. You will always receive at least a rare card.
+          </Text>
+        </VStack>
       </VStack>
     )
   }
 
   const MintContent = () => {
     return (
-      <VStack>
-        <VStack>
+      <Flex direction="column" align="flex-start" gap="2rem" flex="1" h="100%">
+        <VStack align="flex-start" gap="1rem">
           <Heading>Select your chest</Heading>
-          <HStack>
-            <ChestTile name="Lords Chest"/>
-            <ChestTile name="Lords Chest"/>
-            <ChestTile name="Lords Chest"/>
+          <HStack gap="2rem">
+            <For each={[{name: "Knight"}, {name: "Lord"}, {name: "King"},]}>
+              {(item, index) => (
+                <ChestTile name={item.name}/>
+              )}
+            </For>
           </HStack>
         </VStack>
 
-        <VStack>
+        <VStack align="flex-start" gap="1rem">
           <Heading>Chest Reward</Heading>
-          <HStack>
+          <HStack flexWrap="wrap">
+            <For
+              each={[{name: "Naruto"}, {name: "Sasuke"}, {name: "Sakura"}, {name: "Sakura"}, {name: "Sakura"}, {name: "Sakura"}, {name: "Sakura"}]}>
+              {(item, index) => (
+                <Tag variant="outline" rounded="md" size="lg">
+                  <Text fontWeight="medium" paddingX="4" paddingY="2" color="white">{item.name}</Text>
+                </Tag>
+              )}
+            </For>
           </HStack>
         </VStack>
 
-        <VStack>
+        <VStack align="flex-start" gap="1rem">
           <Heading>Amount</Heading>
-          <StepperInput defaultValue="3"/>
+          <StepperInput color="white" defaultValue="3"/>
         </VStack>
+        <Box flex="1"></Box>
         <ButtonList
           guardList={guards}
           candyMachine={candyMachine}
@@ -342,7 +362,7 @@ export default function Home() {
           onOpen={onShowNftOpen}
           setCheckEligibility={setCheckEligibility}
         />
-      </VStack>
+      </Flex>
     )
   }
 
@@ -353,7 +373,7 @@ export default function Home() {
   const ChestTile = (props: ChestTileProps) => {
     return (
       <VStack>
-        <Image asChild h="150px" w="150px" rounded="2xl">
+        <Image maxHeight="9rem" maxWidth="9rem" fit="cover" rounded="2xl" asChild>
           <NextImage src={lord_chest_image} alt="..."/>
         </Image>
         <Text>

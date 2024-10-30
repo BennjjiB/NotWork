@@ -30,7 +30,6 @@ import {
 import {mintText} from "../settings";
 import {
   Box,
-  Button,
   Flex,
   HStack,
   Heading,
@@ -55,6 +54,7 @@ import {
 import {useSolanaTime} from "@/utils/SolanaTimeContext";
 import {verifyTx} from "@/utils/verifyTx";
 import {base58} from "@metaplex-foundation/umi/serializers";
+import {Button} from "@/components/ui/button";
 
 const updateLoadingText = (
   loadingText: string | undefined,
@@ -505,11 +505,8 @@ export function ButtonList({
   }
 
   const listItems = buttonGuardList.map((buttonGuard, index) => (
-    <Box key={index} marginTop={"20px"}>
+    <Box w="100%" key={index}>
       <HStack>
-        <Heading size="xs" textTransform="uppercase">
-          {buttonGuard.header}
-        </Heading>
         <Flex justifyContent="flex-end" marginLeft="auto">
           {buttonGuard.endTime > createBigInt(0) &&
             buttonGuard.endTime - solanaTime > createBigInt(0) &&
@@ -543,35 +540,35 @@ export function ButtonList({
             )}
         </Flex>
       </HStack>
-      <Text pt="2" fontSize="sm">
-        {buttonGuard.mintText}
-      </Text>
-      <VStack>
-        <Button
-          onClick={() =>
-            mintClick(
-              umi,
-              buttonGuard,
-              candyMachine,
-              candyGuard,
-              ownedTokens,
-              numberInputValues[buttonGuard.label] || 1,
-              mintsCreated,
-              setMintsCreated,
-              guardList,
-              setGuardList,
-              onOpen,
-              setCheckEligibility
-            )
-          }
-          key={buttonGuard.label}
-          size="sm"
-          backgroundColor="teal.100"
-          disabled={!buttonGuard.allowed}
-        >
-          {buttonGuard.buttonLabel}
-        </Button>
-      </VStack>
+      <Button
+        onClick={() =>
+          mintClick(
+            umi,
+            buttonGuard,
+            candyMachine,
+            candyGuard,
+            ownedTokens,
+            numberInputValues[buttonGuard.label] || 1,
+            mintsCreated,
+            setMintsCreated,
+            guardList,
+            setGuardList,
+            onOpen,
+            setCheckEligibility
+          )
+        }
+        rounded="lg"
+        w="100%"
+        key={buttonGuard.label}
+        size="lg"
+        backgroundColor="#FDB620"
+        boxShadow="0 5px 0px #845536"
+        textStyle="2xl"
+        fontWeight="bold"
+        disabled={!buttonGuard.allowed && false}
+      >
+        {buttonGuard.buttonLabel}
+      </Button>
     </Box>
   ));
 

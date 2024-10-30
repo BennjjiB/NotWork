@@ -27,8 +27,8 @@ const DecrementTrigger = forwardRef<
   NumberInput.DecrementTriggerProps
 >(function DecrementTrigger(props, ref) {
   return (
-    <NumberInput.DecrementTrigger {...props} asChild ref={ref}>
-      <IconButton variant="outline" size="sm">
+    <NumberInput.DecrementTrigger {...props} asChild ref={ref} _hover={{ bg: "transparent" }}>
+      <IconButton color="white" variant="outline" size="sm">
         <LuMinus />
       </IconButton>
     </NumberInput.DecrementTrigger>
@@ -40,8 +40,8 @@ const IncrementTrigger = forwardRef<
   NumberInput.IncrementTriggerProps
 >(function IncrementTrigger(props, ref) {
   return (
-    <NumberInput.IncrementTrigger {...props} asChild ref={ref}>
-      <IconButton variant="outline" size="sm">
+    <NumberInput.IncrementTrigger {...props} asChild ref={ref} _hover={{ bg: "transparent" }}>
+      <IconButton color="white" variant="outline" size="sm">
         <LuPlus />
       </IconButton>
     </NumberInput.IncrementTrigger>

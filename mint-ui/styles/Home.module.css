@@ -1,15 +1,17 @@
 .wallet {
-    display: flex;
-    padding: 3rem;
-    flex-direction: row-reverse;
+    position: absolute;
+    top: 3rem;
+    right: 3rem;
 }
 
 .content {
-    border: solid red 1px;
-}
-
-.header {
-
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    height: 100%;
+    margin: 0 15vw;
+    overflow: hidden;
 }
 
 .goldEffect {
