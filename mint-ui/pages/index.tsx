@@ -1,11 +1,11 @@
 import {
+  none,
   PublicKey,
   publicKey,
   Umi,
 } from "@metaplex-foundation/umi";
 import {DigitalAssetWithToken, JsonMetadata} from "@metaplex-foundation/mpl-token-metadata";
-import dynamic from "next/dynamic";
-import {Dispatch, SetStateAction, useEffect, useMemo, useState} from "react";
+import React, {Dispatch, SetStateAction, useEffect, useMemo, useState} from "react";
 import {useUmi} from "@/utils/useUmi";
 import {
   fetchCandyMachine,
@@ -17,40 +17,30 @@ import {
 import styles from "../styles/Home.module.css";
 import {guardChecker} from "@/utils/checkAllowed";
 import {
-  Center,
-  Card,
-  CardHeader,
-  CardBody,
   Heading,
-  Stack,
   Text,
-  Skeleton,
   useDisclosure,
-  Button,
-  DialogBody,
-  DialogContent,
-  DialogHeader,
   Image,
   Box,
-  Separator,
   VStack,
   Flex,
-  StackSeparator, HStack, NumberInput, For
+  HStack,
+  For
 } from '@chakra-ui/react';
 import {ButtonList} from "@/components/mintButton";
 import {GuardReturn} from "@/utils/checkerHelper";
-import {ShowNft} from "@/components/showNft";
-import {InitializeModal} from "@/components/initializeModal";
-import NextImage from 'next/image'
+import NextImage, {StaticImageData} from 'next/image'
 import {useSolanaTime} from "@/utils/SolanaTimeContext";
 import {WalletMultiButton} from "@solana/wallet-adapter-react-ui";
 import '@solana/wallet-adapter-react-ui/styles.css';
 import crystal from 'assets/Crystal.png';
+import knight_chest_image from 'assets/Knights_Chest.png';
 import lord_chest_image from 'assets/Lords_Chest.png';
-import {md} from "node-forge";
-import {AppProps} from "next/app";
+import king_chest_image from 'assets/Kings_Chest.png';
 import {StepperInput} from "@/components/ui/stepper-input";
 import {Tag} from "@/components/ui/tag";
+import {image} from "@/settings";
+import {ValueChangeDetails} from "@zag-js/number-input";
 
 // Fetches candy machines and guards
 const fetchCandyMachineAndGuard = (
@@ -281,6 +271,20 @@ export default function Home() {
   };
 */
 
+  const [chestType, setChestType] = useState("Knight");
+  const [amount, setAmount] = useState("1");
+
+  function getAttributes(name: string) {
+    switch (name) {
+      case "Knight":
+        return [{name: "2 Card Packs"}, {name: "1 Mythical Chance"}, {name: "2.5% Airdrop Boost"}, {name: "1 Knight Cardback"}]
+      case "Lord":
+        return [{name: "5 Card Packs"}, {name: "1 Mythical Chance"}, {name: "5% Airdrop Boost"}, {name: "1 Lord Cardback"}]
+      case "King":
+        return [{name: "10 Card Packs"}, {name: "1 Mythical Card"}, {name: "10% Airdrop Boost"}, {name: "1 Free pack per season"}, {name: "1 King Cardback"}]
+    }
+  }
+
   const PageContent = () => {
     return (
       <VStack gap="3rem">
@@ -323,9 +327,13 @@ export default function Home() {
         <VStack align="flex-start" gap="1rem">
           <Heading>Select your chest</Heading>
           <HStack gap="2rem">
-            <For each={[{name: "Knight"}, {name: "Lord"}, {name: "King"},]}>
+            <For each={[
+              {name: "Knight", image: knight_chest_image},
+              {name: "Lord", image: lord_chest_image},
+              {name: "King", image: king_chest_image}
+            ]}>
               {(item, index) => (
-                <ChestTile name={item.name}/>
+                <ChestTile name={item.name} image={item.image}/>
               )}
             </For>
           </HStack>
@@ -335,7 +343,7 @@ export default function Home() {
           <Heading>Chest Reward</Heading>
           <HStack flexWrap="wrap">
             <For
-              each={[{name: "Naruto"}, {name: "Sasuke"}, {name: "Sakura"}, {name: "Sakura"}, {name: "Sakura"}, {name: "Sakura"}, {name: "Sakura"}]}>
+              each={getAttributes(chestType)}>
               {(item, index) => (
                 <Tag variant="outline" rounded="md" size="lg">
                   <Text fontWeight="medium" paddingX="4" paddingY="2" color="white">{item.name}</Text>
@@ -347,7 +355,9 @@ export default function Home() {
 
         <VStack align="flex-start" gap="1rem">
           <Heading>Amount</Heading>
-          <StepperInput color="white" defaultValue="3"/>
+          <StepperInput color="white" min={1} value={amount} onValueChange={(details: ValueChangeDetails) => {
+            setAmount(details.value)
+          }}/>
         </VStack>
         <Box flex="1"></Box>
         <ButtonList
@@ -368,13 +378,21 @@ export default function Home() {
 
   interface ChestTileProps {
     name: string
+    image: StaticImageData
   }
 
   const ChestTile = (props: ChestTileProps) => {
     return (
-      <VStack>
-        <Image maxHeight="9rem" maxWidth="9rem" fit="cover" rounded="2xl" asChild>
-          <NextImage src={lord_chest_image} alt="..."/>
+      <VStack cursor="pointer" onClick={() => setChestType(props.name)}>
+        <Image className={(chestType == props.name) ? styles.chestBorder : ""}
+               transition="all .05s ease-in-out"
+               _hover={{transform: "scale(1.01)"}}
+               maxHeight="9rem"
+               maxWidth="9rem"
+               fit="cover"
+               rounded="2xl"
+               asChild>
+          <NextImage src={props.image} alt="..."/>
         </Image>
         <Text>
           {props.name}
