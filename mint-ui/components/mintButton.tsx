@@ -405,6 +405,7 @@ const Timer = ({
 };
 
 type Props = {
+  text: String,
   umi: Umi;
   guardList: GuardReturn[];
   candyMachine: CandyMachine | undefined;
@@ -428,6 +429,7 @@ type Props = {
 };
 
 export function ButtonList({
+                             text,
                              umi,
                              guardList,
                              candyMachine,
@@ -527,7 +529,7 @@ export function ButtonList({
       fontWeight="bold"
       disabled={!buttonGuard.allowed && false}
     >
-      {buttonGuard.buttonLabel}
+      {text}
     </Button>
   ));
 

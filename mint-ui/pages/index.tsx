@@ -41,6 +41,13 @@ import {StepperInput} from "@/components/ui/stepper-input";
 import {Tag} from "@/components/ui/tag";
 import {image} from "@/settings";
 import {ValueChangeDetails} from "@zag-js/number-input";
+import dynamic from "next/dynamic";
+
+const WalletMultiButtonDynamic = dynamic(
+  async () =>
+    (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
+  {ssr: false}
+);
 
 // Fetches candy machines and guards
 const fetchCandyMachineAndGuard = (
@@ -170,107 +177,6 @@ export default function Home() {
   }, [umi, checkEligibility, firstRun]);
 
   // ---------- UI ----------
-  /*
-  const PageContent = () => {
-    return (
-        <Card>
-          <CardHeader>
-            <Flex minWidth='max-content' alignItems='center' gap='2'>
-              <Box>
-                <Heading size='md'>{headerText}</Heading>
-              </Box>
-              {loading ? (<></>) : (
-                <Flex justifyContent="flex-end" marginLeft="auto">
-                  <Box background={"teal.100"} borderRadius={"5px"} minWidth={"50px"}
-                       minHeight={"50px"} p={2}>
-                    <VStack>
-                      <Text fontSize={"sm"}>Available NFTs:</Text>
-                      <Text
-                        fontWeight={"semibold"}>{Number(candyMachine?.data.itemsAvailable) - Number(candyMachine?.itemsRedeemed)}/{Number(candyMachine?.data.itemsAvailable)}</Text>
-                    </VStack>
-                  </Box>
-                </Flex>
-              )}
-            </Flex>
-          </CardHeader>
-
-          <CardBody>
-            <Center>
-              <Box
-                rounded={'lg'}
-                mt={-12}
-                pos={'relative'}>
-                <Image
-                  rounded={'lg'}
-                  height={230}
-                  objectFit={'cover'}
-                  alt={"project Image"}
-                  src={image}
-                />
-              </Box>
-            </Center>
-            <Stack separator={<StackSeparator/>}>
-              {loading ? (
-                <div>
-                  <Separator my="10px"/>
-                  <Skeleton height="30px" my="10px"/>
-                  <Skeleton height="30px" my="10px"/>
-                  <Skeleton height="30px" my="10px"/>
-                </div>
-              ) : (
-                <ButtonList
-                  guardList={guards}
-                  candyMachine={candyMachine}
-                  candyGuard={candyGuard}
-                  umi={umi}
-                  ownedTokens={ownedTokens}
-                  setGuardList={setGuards}
-                  mintsCreated={mintsCreated}
-                  setMintsCreated={setMintsCreated}
-                  onOpen={onShowNftOpen}
-                  setCheckEligibility={setCheckEligibility}
-                />
-              )}
-            </Stack>
-          </CardBody>
-        </Card>
-        {umi.identity.publicKey === candyMachine?.authority ? (
-            <>
-              <Center>
-                <Button backgroundColor={"red.200"} marginTop={"10"} onClick={onInitializerOpen}>Initialize
-                  Everything!</Button>
-              </Center>
-              <Dialog isOpen={isInitializerOpen} onClose={onInitializerClose}>
-                <ModalOverlay/>
-                <DialogContent maxW="600px">
-                  <DialogHeader>Initializer</DialogHeader>
-                  <ModalCloseButton/>
-                  <DialogBody>
-                    < InitializeModal umi={umi} candyMachine={candyMachine} candyGuard={candyGuard}/>
-                  </DialogBody>
-                </DialogContent>
-              </Dialog>
-
-            </>)
-          :
-          (<></>)
-        }
-
-        <Modal isOpen={isShowNftOpen} onClose={onShowNftClose}>
-          <ModalOverlay/>
-          <ModalContent>
-            <ModalHeader>Your minted NFT:</ModalHeader>
-            <ModalCloseButton/>
-            <ModalBody>
-              <ShowNft nfts={mintsCreated}/>
-            </ModalBody>
-          </ModalContent>
-        </Modal>
-      </>
-    );
-  };
-*/
-
   const [chestType, setChestType] = useState("Knight");
   const [amount, setAmount] = useState("1");
 
@@ -282,6 +188,19 @@ export default function Home() {
         return [{name: "5 Card Packs"}, {name: "1 Mythical Chance"}, {name: "5% Airdrop Boost"}, {name: "1 Lord Cardback"}]
       case "King":
         return [{name: "10 Card Packs"}, {name: "1 Mythical Card"}, {name: "10% Airdrop Boost"}, {name: "1 Free pack per season"}, {name: "1 King Cardback"}]
+    }
+  }
+
+  function getButtonText(name: string): string {
+    switch (name) {
+      case "Knight":
+        return "Mint for 0.25 Sol"
+      case "Lord":
+        return "Mint for 0.5 Sol"
+      case "King":
+        return "Mint for 1 Sol"
+      default:
+        return ""
     }
   }
 
@@ -363,6 +282,7 @@ export default function Home() {
           }}/>
         </VStack>
         <ButtonList
+          text={getButtonText(chestType)}
           guardList={guards}
           candyMachine={candyMachine}
           candyGuard={candyGuard}
@@ -406,11 +326,13 @@ export default function Home() {
   return (
     <main>
       <div className={styles.wallet}>
-        <WalletMultiButton/>
+        <WalletMultiButtonDynamic></WalletMultiButtonDynamic>
       </div>
-      <div className={styles.content}>
-        <PageContent></PageContent>
-      </div>
+      {loading ? (<></>) : (
+        <div className={styles.content}>
+          <PageContent></PageContent>
+        </div>
+      )}
     </main>
   );
 }
