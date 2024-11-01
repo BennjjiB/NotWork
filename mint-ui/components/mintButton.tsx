@@ -29,15 +29,7 @@ import {
 } from "@metaplex-foundation/mpl-token-metadata";
 import {mintText} from "../settings";
 import {
-  Box,
-  Flex,
-  HStack,
-  Heading,
-  SimpleGrid,
-  Text,
-  Tooltip,
-  NumberInput,
-  VStack
+  Text
 } from "@chakra-ui/react";
 import {
   fetchAddressLookupTable, setComputeUnitPrice,
@@ -505,71 +497,38 @@ export function ButtonList({
   }
 
   const listItems = buttonGuardList.map((buttonGuard, index) => (
-    <Box w="100%" key={index}>
-      <HStack>
-        <Flex justifyContent="flex-end" marginLeft="auto">
-          {buttonGuard.endTime > createBigInt(0) &&
-            buttonGuard.endTime - solanaTime > createBigInt(0) &&
-            (!buttonGuard.startTime ||
-              buttonGuard.startTime - solanaTime <= createBigInt(0)) && (
-              <>
-                <Text fontSize="sm" marginRight={"2"}>
-                  Ending in:{" "}
-                </Text>
-                <Timer
-                  toTime={buttonGuard.endTime}
-                  solanaTime={solanaTime}
-                  setCheckEligibility={setCheckEligibility}
-                />
-              </>
-            )}
-          {buttonGuard.startTime > createBigInt(0) &&
-            buttonGuard.startTime - solanaTime > createBigInt(0) &&
-            (!buttonGuard.endTime ||
-              solanaTime - buttonGuard.endTime <= createBigInt(0)) && (
-              <>
-                <Text fontSize="sm" marginRight={"2"}>
-                  Starting in:{" "}
-                </Text>
-                <Timer
-                  toTime={buttonGuard.startTime}
-                  solanaTime={solanaTime}
-                  setCheckEligibility={setCheckEligibility}
-                />
-              </>
-            )}
-        </Flex>
-      </HStack>
-      <Button
-        onClick={() =>
-          mintClick(
-            umi,
-            buttonGuard,
-            candyMachine,
-            candyGuard,
-            ownedTokens,
-            numberInputValues[buttonGuard.label] || 1,
-            mintsCreated,
-            setMintsCreated,
-            guardList,
-            setGuardList,
-            onOpen,
-            setCheckEligibility
-          )
-        }
-        rounded="lg"
-        w="100%"
-        key={buttonGuard.label}
-        size="lg"
-        backgroundColor="#FDB620"
-        boxShadow="0 5px 0px #845536"
-        textStyle="2xl"
-        fontWeight="bold"
-        disabled={!buttonGuard.allowed && false}
-      >
-        {buttonGuard.buttonLabel}
-      </Button>
-    </Box>
+    <Button
+      w="100%"
+      onClick={() =>
+        mintClick(
+          umi,
+          buttonGuard,
+          candyMachine,
+          candyGuard,
+          ownedTokens,
+          numberInputValues[buttonGuard.label] || 1,
+          mintsCreated,
+          setMintsCreated,
+          guardList,
+          setGuardList,
+          onOpen,
+          setCheckEligibility
+        )
+      }
+      rounded="lg"
+      w="100%"
+      key={buttonGuard.label}
+      size="lg"
+      backgroundColor="#FDB620"
+      boxShadow="0 5px 0px #845536"
+      _hover={{backgroundColor: "#DA9F21"}}
+      _active={{backgroundColor: "#DA9F21", boxShadow: "0 2px 0px #845536", transform: "translateY(3px)"}}
+      textStyle="2xl"
+      fontWeight="bold"
+      disabled={!buttonGuard.allowed && false}
+    >
+      {buttonGuard.buttonLabel}
+    </Button>
   ));
 
   return <>{listItems}</>;

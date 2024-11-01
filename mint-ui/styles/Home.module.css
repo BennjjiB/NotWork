@@ -1,17 +1,25 @@
 .wallet {
-    position: absolute;
-    top: 3rem;
-    right: 3rem;
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+}
+
+@media (max-width: 50em) {
+    .wallet {
+        position: inherit;
+        margin-left: calc(100% - 200px);
+        margin-top: 3rem;
+    }
 }
 
 .content {
     display: flex;
     flex-direction: column;
     align-content: center;
-    justify-content: center;
+    justify-content: start;
     height: 100%;
-    margin: 0 15vw;
-    overflow: hidden;
+    margin: 0 18vw;
+    padding: 3rem 0;
 }
 
 .chestBorder {

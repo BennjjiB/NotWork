@@ -25,7 +25,7 @@ import {
   VStack,
   Flex,
   HStack,
-  For
+  For, Center
 } from '@chakra-ui/react';
 import {ButtonList} from "@/components/mintButton";
 import {GuardReturn} from "@/utils/checkerHelper";
@@ -33,7 +33,7 @@ import NextImage, {StaticImageData} from 'next/image'
 import {useSolanaTime} from "@/utils/SolanaTimeContext";
 import {WalletMultiButton} from "@solana/wallet-adapter-react-ui";
 import '@solana/wallet-adapter-react-ui/styles.css';
-import crystal from 'assets/Crystal.png';
+import knightAvatar from 'assets/KnightAvatar.png';
 import knight_chest_image from 'assets/Knights_Chest.png';
 import lord_chest_image from 'assets/Lords_Chest.png';
 import king_chest_image from 'assets/Kings_Chest.png';
@@ -287,29 +287,32 @@ export default function Home() {
 
   const PageContent = () => {
     return (
-      <VStack gap="3rem">
-        <VStack gap="1rem">
-          <Heading textStyle="6xl" className={styles.goldEffect}>Secure your Founder Chest</Heading>
+      <Flex direction="column" gap={{base: "2rem", lg: "3rem"}}>
+        <VStack gap={{base: "0.5rem", lg: "1rem"}}>
+          <Heading textAlign="center" textStyle={{base: "4xl", lg: "6xl"}} className={styles.goldEffect}>Secure your
+            Founder
+            Chest</Heading>
           <Text textAlign="center">
-            Prepare to immerse yourself in the thrilling world of Otium with our exclusive presale! <br/>
-            For a limited time you have the chance to purchase three unique tiers of chests, each brimming with powerful
+            Prepare to immerse yourself in the thrilling world of Otium with our exclusive presale!
+            For a limited time you have the chance to purchase three unique tiers of chests, each brimming with
+            powerful
             items.
           </Text>
         </VStack>
 
-        <HStack gap="4rem" h="100%">
+        <HStack gap="4rem" h={"100%"}>
           <Detail></Detail>
           <MintContent></MintContent>
         </HStack>
-      </VStack>
+      </Flex>
     )
   }
 
   const Detail = () => {
     return (
-      <VStack h="100%" flex="0.7" gap="0">
-        <Image asChild h="100%">
-          <NextImage src={crystal} alt="..."/>
+      <VStack hideBelow={"lg"} h="100%" flex="0.7" gap="4px">
+        <Image h="100%" aspectRatio={4 / 3} fit="contain" asChild>
+          <NextImage src={knightAvatar} alt="..."/>
         </Image>
         <VStack gap="0.5rem">
           <Heading size="3xl" className={styles.goldEffect}>Mythical Gem</Heading>
@@ -323,8 +326,8 @@ export default function Home() {
 
   const MintContent = () => {
     return (
-      <Flex direction="column" align="flex-start" gap="2rem" flex="1" h="100%">
-        <VStack align="flex-start" gap="1rem">
+      <Flex direction="column" align="flex-start" gap={{base: "1rem"}} flex="1" h="100%">
+        <VStack align="flex-start" gap="0.5rem">
           <Heading>Select your chest</Heading>
           <HStack gap="2rem">
             <For each={[
@@ -339,13 +342,13 @@ export default function Home() {
           </HStack>
         </VStack>
 
-        <VStack align="flex-start" gap="1rem">
+        <VStack align="flex-start" gap="0.5rem">
           <Heading>Chest Reward</Heading>
           <HStack flexWrap="wrap">
             <For
               each={getAttributes(chestType)}>
               {(item, index) => (
-                <Tag variant="outline" rounded="md" size="lg">
+                <Tag variant="outline" rounded="md" size={{base: "md", xl: "lg"}}>
                   <Text fontWeight="medium" paddingX="4" paddingY="2" color="white">{item.name}</Text>
                 </Tag>
               )}
@@ -353,13 +356,12 @@ export default function Home() {
           </HStack>
         </VStack>
 
-        <VStack align="flex-start" gap="1rem">
+        <VStack align="flex-start" gap="0.5rem">
           <Heading>Amount</Heading>
           <StepperInput color="white" min={1} value={amount} onValueChange={(details: ValueChangeDetails) => {
             setAmount(details.value)
           }}/>
         </VStack>
-        <Box flex="1"></Box>
         <ButtonList
           guardList={guards}
           candyMachine={candyMachine}
@@ -387,10 +389,9 @@ export default function Home() {
         <Image className={(chestType == props.name) ? styles.chestBorder : ""}
                transition="all .05s ease-in-out"
                _hover={{transform: "scale(1.01)"}}
-               maxHeight="9rem"
-               maxWidth="9rem"
                fit="cover"
                rounded="2xl"
+               aspectRatio={1 / 1}
                asChild>
           <NextImage src={props.image} alt="..."/>
         </Image>
