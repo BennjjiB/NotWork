@@ -27,7 +27,7 @@ import {
   HStack,
   For, Center
 } from '@chakra-ui/react';
-import {ButtonList} from "@/components/mintButton";
+import {MintButton} from "@/components/mintButton";
 import {GuardReturn} from "@/utils/checkerHelper";
 import NextImage, {StaticImageData} from 'next/image'
 import {useSolanaTime} from "@/utils/SolanaTimeContext";
@@ -42,6 +42,7 @@ import {Tag} from "@/components/ui/tag";
 import {image} from "@/settings";
 import {ValueChangeDetails} from "@zag-js/number-input";
 import dynamic from "next/dynamic";
+import {Toaster} from "@/components/ui/toaster";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -281,8 +282,9 @@ export default function Home() {
             setAmount(details.value)
           }}/>
         </VStack>
-        <ButtonList
+        <MintButton
           text={getButtonText(chestType)}
+          mintAmount={+amount}
           guardList={guards}
           candyMachine={candyMachine}
           candyGuard={candyGuard}
@@ -328,6 +330,7 @@ export default function Home() {
       <div className={styles.wallet}>
         <WalletMultiButtonDynamic></WalletMultiButtonDynamic>
       </div>
+      <Toaster />
       {loading ? (<></>) : (
         <div className={styles.content}>
           <PageContent></PageContent>

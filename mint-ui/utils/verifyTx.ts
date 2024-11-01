@@ -1,6 +1,6 @@
-import { BlockhashWithExpiryBlockHeight, PublicKey, Some, Umi } from "@metaplex-foundation/umi";
-import { createStandaloneToast } from "@chakra-ui/react";
-import { base58 } from "@metaplex-foundation/umi/serializers";
+import {BlockhashWithExpiryBlockHeight, PublicKey, Umi} from "@metaplex-foundation/umi";
+import {base58} from "@metaplex-foundation/umi/serializers";
+import {toaster} from "@/components/ui/toaster";
 
 const detectBotTax = (logs: string[]) => {
   if (logs.find((l) => l.includes("Candy Guard Botting"))) {
@@ -28,46 +28,48 @@ export const verifyTx = async (umi: Umi, signatures: Uint8Array[], blockhash: Bl
     }
 
     if (!transaction) {
-      return { success: false, reason: "No TX found" };
+      return {success: false, reason: "No TX found"};
     }
 
     if (detectBotTax(transaction.meta.logs)) {
-      return { success: false, reason: "Bot Tax detected!" };
+      return {success: false, reason: "Bot Tax detected!"};
     }
 
-    return { success: true, mint: transaction.message.accounts[1] };
+    return {success: true, mint: transaction.message.accounts[1]};
   };
 
-  await umi.rpc.confirmTransaction(signatures[0], { strategy: { type: "blockhash", ...blockhash}, commitment })
+  await umi.rpc.confirmTransaction(signatures[0], {strategy: {type: "blockhash", ...blockhash}, commitment})
 
   const stati = await Promise.all(signatures.map(verifySignature));
   let successful: PublicKey[] = [];
   let failed: string[] = []
   stati.forEach((status) => {
-    if ((status.success === true)) {
+    if (status.success) {
       successful.push(status.mint);
     } else {
       failed.push(status.reason)
     }
   });
 
-  if (failed && failed.length > 0){
-    createStandaloneToast().toast({
-      title: `${failed.length} transactions failed!`,
-      status: "error",
-      duration: 3000,
-    });
+  if (failed && failed.length > 0) {
+    // Failed
+    toaster.create({
+      title: `Transaction failed`,
+      description: `${failed.length} transactions failed!`,
+      type: "error"
+    })
+
     failed.forEach((fail) => {
       console.error(fail)
     })
   }
 
-  if (successful.length > 0){
-    createStandaloneToast().toast({
-      title: `${successful.length} transactions successful!`,
-      status: "success",
-      duration: 3000,
-    });
+  if (successful.length > 0) {
+    toaster.create({
+      title: `Transaction succeeded`,
+      description: `${successful.length} transactions successful!`,
+      type: "success"
+    })
   }
 
   return successful;

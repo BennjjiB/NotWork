@@ -1,9 +1,8 @@
 import {
   CandyGuard,
   CandyMachine,
-  mintV2,
 } from "@metaplex-foundation/mpl-candy-machine";
-import {GuardReturn} from "../utils/checkerHelper";
+import {GuardReturn} from "@/utils/checkerHelper";
 import {
   AddressLookupTableInput,
   KeypairSigner,
@@ -12,13 +11,8 @@ import {
   Umi,
   createBigInt,
   generateSigner,
-  none,
   publicKey,
   signAllTransactions,
-  signTransaction,
-  sol,
-  some,
-  transactionBuilder,
 } from "@metaplex-foundation/umi";
 import {
   DigitalAsset,
@@ -27,14 +21,11 @@ import {
   fetchDigitalAsset,
   fetchJsonMetadata,
 } from "@metaplex-foundation/mpl-token-metadata";
-import {mintText} from "../settings";
-import {
-  Text
-} from "@chakra-ui/react";
+import {mintText} from "@/settings";
 import {
   fetchAddressLookupTable, setComputeUnitPrice,
 } from "@metaplex-foundation/mpl-toolbox";
-import {Dispatch, SetStateAction, useEffect, useState} from "react";
+import {Dispatch, SetStateAction} from "react";
 import {
   chooseGuardToUse,
   routeBuilder,
@@ -42,11 +33,12 @@ import {
   GuardButtonList,
   buildTx,
   getRequiredCU,
-} from "../utils/mintHelper";
-import {useSolanaTime} from "@/utils/SolanaTimeContext";
+} from "@/utils/mintHelper";
 import {verifyTx} from "@/utils/verifyTx";
 import {base58} from "@metaplex-foundation/umi/serializers";
 import {Button} from "@/components/ui/button";
+import {Tooltip} from "@/components/ui/tooltip";
+import {Text, VStack} from "@chakra-ui/react";
 
 const updateLoadingText = (
   loadingText: string | undefined,
@@ -108,14 +100,6 @@ const mintClick = async (
   if (!guardToUse.guards) {
     console.error("no guard defined!");
     return;
-  }
-
-  let buyBeer = true;
-  console.log("buyBeer", process.env.NEXT_PUBLIC_BUYMARKBEER)
-
-  if (process.env.NEXT_PUBLIC_BUYMARKBEER === "false") {
-    buyBeer = false;
-    console.log("The Creator does not want to pay for MarkSackerbergs beer 😒");
   }
 
   try {
@@ -180,7 +164,7 @@ const mintClick = async (
       tables,
       latestBlockhash,
       1_400_000,
-      buyBeer
+      false
     );
     const requiredCu = await getRequiredCU(umi, txForSimulation);
 
@@ -197,7 +181,7 @@ const mintClick = async (
         tables,
         latestBlockhash,
         requiredCu,
-        buyBeer
+        false
       );
       console.log(transaction)
       mintTxs.push(transaction);
@@ -244,7 +228,7 @@ const mintClick = async (
 
     await Promise.allSettled(sendPromises);
 
-    if (!(await sendPromises[0]).status === true) {
+    if (!(await sendPromises[0]).status) {
       // throw error that no tx was created
       throw new Error("no tx was created");
     }
@@ -308,104 +292,11 @@ const mintClick = async (
     updateLoadingText(undefined, guardList, guardToUse.label, setGuardList);
   }
 };
-// new component called timer that calculates the remaining Time based on the bigint solana time and the bigint toTime difference.
-const Timer = ({
-                 solanaTime,
-                 toTime,
-                 setCheckEligibility,
-               }: {
-  solanaTime: bigint;
-  toTime: bigint;
-  setCheckEligibility: Dispatch<SetStateAction<boolean>>;
-}) => {
-  const [remainingTime, setRemainingTime] = useState<bigint>(
-    toTime - solanaTime
-  );
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRemainingTime((prev) => {
-        return prev - BigInt(1);
-      });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
 
-  //convert the remaining time in seconds to the amount of days, hours, minutes and seconds left
-  const days = remainingTime / BigInt(86400);
-  const hours = (remainingTime % BigInt(86400)) / BigInt(3600);
-  const minutes = (remainingTime % BigInt(3600)) / BigInt(60);
-  const seconds = remainingTime % BigInt(60);
-  if (days > BigInt(0)) {
-    return (
-      <Text fontSize="sm" fontWeight="bold">
-        {days.toLocaleString("en-US", {
-          minimumIntegerDigits: 2,
-          useGrouping: false,
-        })}
-        d{" "}
-        {hours.toLocaleString("en-US", {
-          minimumIntegerDigits: 2,
-          useGrouping: false,
-        })}
-        h{" "}
-        {minutes.toLocaleString("en-US", {
-          minimumIntegerDigits: 2,
-          useGrouping: false,
-        })}
-        m{" "}
-        {seconds.toLocaleString("en-US", {
-          minimumIntegerDigits: 2,
-          useGrouping: false,
-        })}
-        s
-      </Text>
-    );
-  }
-  if (hours > BigInt(0)) {
-    return (
-      <Text fontSize="sm" fontWeight="bold">
-        {hours.toLocaleString("en-US", {
-          minimumIntegerDigits: 2,
-          useGrouping: false,
-        })}
-        h{" "}
-        {minutes.toLocaleString("en-US", {
-          minimumIntegerDigits: 2,
-          useGrouping: false,
-        })}
-        m{" "}
-        {seconds.toLocaleString("en-US", {
-          minimumIntegerDigits: 2,
-          useGrouping: false,
-        })}
-        s
-      </Text>
-    );
-  }
-  if (minutes > BigInt(0) || seconds > BigInt(0)) {
-    return (
-      <Text fontSize="sm" fontWeight="bold">
-        {minutes.toLocaleString("en-US", {
-          minimumIntegerDigits: 2,
-          useGrouping: false,
-        })}
-        m{" "}
-        {seconds.toLocaleString("en-US", {
-          minimumIntegerDigits: 2,
-          useGrouping: false,
-        })}
-        s
-      </Text>
-    );
-  }
-  if (remainingTime === BigInt(0)) {
-    setCheckEligibility(true);
-  }
-  return <Text></Text>;
-};
-
+// Button UI --------------------------------------------
 type Props = {
   text: String,
+  mintAmount: number,
   umi: Umi;
   guardList: GuardReturn[];
   candyMachine: CandyMachine | undefined;
@@ -428,8 +319,9 @@ type Props = {
   setCheckEligibility: Dispatch<SetStateAction<boolean>>;
 };
 
-export function ButtonList({
+export function MintButton({
                              text,
+                             mintAmount,
                              umi,
                              guardList,
                              candyMachine,
@@ -441,18 +333,6 @@ export function ButtonList({
                              onOpen,
                              setCheckEligibility,
                            }: Props): JSX.Element {
-  const solanaTime = useSolanaTime();
-  const [numberInputValues, setNumberInputValues] = useState<{
-    [label: string]: number;
-  }>({});
-  if (!candyMachine || !candyGuard) {
-    return <></>;
-  }
-
-  const handleNumberInputChange = (label: string, value: number) => {
-    setNumberInputValues((prev) => ({...prev, [label]: value}));
-  };
-
   // remove duplicates from guardList
   //fucked up bugfix
   let filteredGuardlist = guardList.filter(
@@ -470,7 +350,7 @@ export function ButtonList({
   for (const guard of filteredGuardlist) {
     const text = mintText.find((elem) => elem.label === guard.label);
     // find guard by label in candyGuard
-    const group = candyGuard.groups.find((elem) => elem.label === guard.label);
+    const group = candyGuard!.groups.find((elem) => elem.label === guard.label);
     let startTime = createBigInt(0);
     let endTime = createBigInt(0);
     if (group) {
@@ -498,39 +378,41 @@ export function ButtonList({
     buttonGuardList.push(buttonElement);
   }
 
-  const listItems = buttonGuardList.map((buttonGuard, index) => (
-    <Button
-      w="100%"
-      onClick={() =>
-        mintClick(
-          umi,
-          buttonGuard,
-          candyMachine,
-          candyGuard,
-          ownedTokens,
-          numberInputValues[buttonGuard.label] || 1,
-          mintsCreated,
-          setMintsCreated,
-          guardList,
-          setGuardList,
-          onOpen,
-          setCheckEligibility
-        )
-      }
-      rounded="lg"
-      w="100%"
-      key={buttonGuard.label}
-      size="lg"
-      backgroundColor="#FDB620"
-      boxShadow="0 5px 0px #845536"
-      _hover={{backgroundColor: "#DA9F21"}}
-      _active={{backgroundColor: "#DA9F21", boxShadow: "0 2px 0px #845536", transform: "translateY(3px)"}}
-      textStyle="2xl"
-      fontWeight="bold"
-      disabled={!buttonGuard.allowed && false}
-    >
-      {text}
-    </Button>
+  const listItems = buttonGuardList.map((buttonGuard) => (
+    <VStack w={"100%"} alignItems={"start"}>
+      <Button
+        onClick={() =>
+          mintClick(
+            umi,
+            buttonGuard,
+            candyMachine!,
+            candyGuard!,
+            ownedTokens,
+            mintAmount,
+            mintsCreated,
+            setMintsCreated,
+            guardList,
+            setGuardList,
+            onOpen,
+            setCheckEligibility
+          )
+        }
+        rounded="lg"
+        w="100%"
+        key={buttonGuard.label}
+        size="lg"
+        backgroundColor="#FDB620"
+        boxShadow="0 5px 0px #845536"
+        _hover={{backgroundColor: "#DA9F21"}}
+        _active={{backgroundColor: "#DA9F21", boxShadow: "0 2px 0px #845536", transform: "translateY(3px)"}}
+        textStyle="2xl"
+        fontWeight="bold"
+        disabled={!buttonGuard.allowed}
+      >
+        {text}
+      </Button>
+      {!buttonGuard.allowed ? (<Text>{buttonGuard.tooltip}</Text>) : null}
+    </VStack>
   ));
 
   return <>{listItems}</>;

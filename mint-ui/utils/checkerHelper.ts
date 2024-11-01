@@ -17,8 +17,7 @@ import {
   Umi,
   publicKey,
 } from "@metaplex-foundation/umi";
-import { DigitalAssetWithToken } from "@metaplex-foundation/mpl-token-metadata";
-import { createStandaloneToast } from "@chakra-ui/react";
+import {DigitalAssetWithToken} from "@metaplex-foundation/mpl-token-metadata";
 
 export interface GuardReturn {
   label: string;
@@ -43,7 +42,7 @@ export const allocationChecker = async (
   guard: {
     label: string;
     guards: GuardSet;
-}
+  }
 ) => {
   const allocation = guard.guards.allocation as Some<Allocation>;
 
@@ -58,13 +57,6 @@ export const allocationChecker = async (
       return allocation.value.limit - mintCounter.count;
     } else {
       // no allocation mint Counter found - not created yet
-      createStandaloneToast().toast({
-        title: "Allocation Guard not Initialized!",
-        description: "Minting will fail!",
-        status: "error",
-        duration: 900,
-        isClosable: true,
-      });
       return allocation.value.limit;
     }
 
@@ -108,7 +100,7 @@ export const mintLimitChecker = async (
   guard: {
     label: string;
     guards: GuardSet;
-}
+  }
 ) => {
   const mintLimit = guard.guards.mintLimit as Some<MintLimit>;
 
@@ -220,7 +212,7 @@ export const calculateMintable = (
   mintableAmount: number,
   newAmount: number
 ) => {
-  if (mintableAmount > newAmount){
+  if (mintableAmount > newAmount) {
     mintableAmount = newAmount;
   }
 
@@ -228,11 +220,11 @@ export const calculateMintable = (
   let maxmintamount = 0;
   try {
     maxmintamount = Number(process.env.NEXT_PUBLIC_MAXMINTAMOUNT)
-  } catch (e){
+  } catch (e) {
     console.error('process.env.NEXT_PUBLIC_MAXMINTAMOUNT is not a number!', e)
     return mintableAmount;
   }
-  if (mintableAmount > maxmintamount){
+  if (mintableAmount > maxmintamount) {
     mintableAmount = maxmintamount;
   }
 
