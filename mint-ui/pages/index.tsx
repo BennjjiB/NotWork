@@ -1,5 +1,4 @@
 import {
-  none,
   PublicKey,
   publicKey,
   Umi,
@@ -21,19 +20,19 @@ import {
   Text,
   useDisclosure,
   Image,
-  Box,
   VStack,
   Flex,
   HStack,
-  For, Center
+  For
 } from '@chakra-ui/react';
 import {MintButton} from "@/components/mintButton";
 import {GuardReturn} from "@/utils/checkerHelper";
 import NextImage, {StaticImageData} from 'next/image'
 import {useSolanaTime} from "@/utils/SolanaTimeContext";
-import {WalletMultiButton} from "@solana/wallet-adapter-react-ui";
 import '@solana/wallet-adapter-react-ui/styles.css';
 import knightAvatar from 'assets/KnightAvatar.png';
+import lordAvatar from 'assets/Lord_Avatar.png';
+import kingAvatar from 'assets/King_Avatar.png';
 import knight_chest_image from 'assets/Knights_Chest.png';
 import lord_chest_image from 'assets/Lords_Chest.png';
 import king_chest_image from 'assets/Kings_Chest.png';
@@ -205,6 +204,45 @@ export default function Home() {
     }
   }
 
+  function getDetailImage(name: string): StaticImageData {
+    switch (name) {
+      case "Knight":
+        return knightAvatar
+      case "Lord":
+        return lordAvatar
+      case "King":
+        return kingAvatar
+      default:
+        return knightAvatar
+    }
+  }
+
+  function getDetailHeader(name: string): string {
+    switch (name) {
+      case "Knight":
+        return "Knight"
+      case "Lord":
+        return "Lord"
+      case "King":
+        return "King"
+      default:
+        return ""
+    }
+  }
+
+  function getDetailText(name: string): string {
+    switch (name) {
+      case "Knight":
+        return "A mighty knight"
+      case "Lord":
+        return "A lordly lord"
+      case "King":
+        return "A kingly king"
+      default:
+        return ""
+    }
+  }
+
   const PageContent = () => {
     return (
       <Flex direction="column" gap={{base: "2rem", lg: "3rem"}}>
@@ -232,12 +270,12 @@ export default function Home() {
     return (
       <VStack hideBelow={"lg"} h="100%" flex="0.7" gap="4px">
         <Image h="100%" aspectRatio={4 / 3} fit="contain" asChild>
-          <NextImage src={knightAvatar} alt="..."/>
+          <NextImage src={getDetailImage(chestType)} alt="..."/>
         </Image>
         <VStack gap="0.5rem">
-          <Heading size="3xl" className={styles.goldEffect}>Mythical Gem</Heading>
+          <Heading size="3xl" className={styles.goldEffect}>{getDetailHeader(chestType)}</Heading>
           <Text textAlign="center">
-            Receive a random card with the chances of mythical. You will always receive at least a rare card.
+            {getDetailText(chestType)}
           </Text>
         </VStack>
       </VStack>
@@ -330,7 +368,7 @@ export default function Home() {
       <div className={styles.wallet}>
         <WalletMultiButtonDynamic></WalletMultiButtonDynamic>
       </div>
-      <Toaster />
+      <Toaster/>
       {loading ? (<></>) : (
         <div className={styles.content}>
           <PageContent></PageContent>

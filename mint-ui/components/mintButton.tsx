@@ -411,7 +411,7 @@ export function MintButton({
       >
         {text}
       </Button>
-      {!buttonGuard.allowed ? (<Text>{buttonGuard.tooltip}</Text>) : null}
+      {!buttonGuard.allowed ? (<Text color={"#FF0000"}>{buttonGuard.tooltip}</Text>) : null}
     </VStack>
   ));
 
