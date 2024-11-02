@@ -54,8 +54,7 @@ export const verifyTx = async (umi: Umi, signatures: Uint8Array[], blockhash: Bl
   if (failed && failed.length > 0) {
     // Failed
     toaster.create({
-      title: `Transaction failed`,
-      description: `${failed.length} transactions failed!`,
+      title: `${failed.length} transactions failed!`,
       type: "error"
     })
 
@@ -66,8 +65,7 @@ export const verifyTx = async (umi: Umi, signatures: Uint8Array[], blockhash: Bl
 
   if (successful.length > 0) {
     toaster.create({
-      title: `Transaction succeeded`,
-      description: `${successful.length} transactions successful!`,
+      title: `${successful.length} transactions successful!`,
       type: "success"
     })
   }

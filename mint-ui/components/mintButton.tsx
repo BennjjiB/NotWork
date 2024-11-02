@@ -231,7 +231,7 @@ const mintClick = async (
       throw new Error("no tx was created");
     }
     updateLoadingText(
-      `finalizing transaction(s)`,
+      `Finalizing transaction`,
       guardList,
       guardToUse.label,
       setGuardList
@@ -402,6 +402,10 @@ export function MintButton({
         textStyle="2xl"
         fontWeight="bold"
         disabled={!buttonGuard.allowed}
+        loading={guardList.find((elem) => elem.label === buttonGuard.label)
+          ?.loadingText != null}
+        loadingText={guardList.find((elem) => elem.label === buttonGuard.label)
+          ?.loadingText ?? ""}
       >
         {text}
       </Button>
