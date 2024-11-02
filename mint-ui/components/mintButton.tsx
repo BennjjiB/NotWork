@@ -37,7 +37,6 @@ import {
 import {verifyTx} from "@/utils/verifyTx";
 import {base58} from "@metaplex-foundation/umi/serializers";
 import {Button} from "@/components/ui/button";
-import {Tooltip} from "@/components/ui/tooltip";
 import {Text, VStack} from "@chakra-ui/react";
 
 const updateLoadingText = (
@@ -93,7 +92,6 @@ const mintClick = async (
   >,
   guardList: GuardReturn[],
   setGuardList: Dispatch<SetStateAction<GuardReturn[]>>,
-  onOpen: () => void,
   setCheckEligibility: Dispatch<SetStateAction<boolean>>
 ) => {
   const guardToUse = chooseGuardToUse(guard, candyGuard);
@@ -274,7 +272,6 @@ const mintClick = async (
     // Update mintsCreated only if there are new mints
     if (newMintsCreated.length > 0) {
       setMintsCreated(newMintsCreated);
-      onOpen();
     }
   } catch (e) {
     console.error(`minting failed because of ${e}`);
@@ -315,7 +312,6 @@ type Props = {
       | undefined
     >
   >;
-  onOpen: () => void;
   setCheckEligibility: Dispatch<SetStateAction<boolean>>;
 };
 
@@ -330,7 +326,6 @@ export function MintButton({
                              setGuardList,
                              mintsCreated,
                              setMintsCreated,
-                             onOpen,
                              setCheckEligibility,
                            }: Props): JSX.Element {
   // remove duplicates from guardList
@@ -378,8 +373,8 @@ export function MintButton({
     buttonGuardList.push(buttonElement);
   }
 
-  const listItems = buttonGuardList.map((buttonGuard) => (
-    <VStack w={"100%"} alignItems={"start"}>
+  const listItems = buttonGuardList.map((buttonGuard, index) => (
+    <VStack w={"100%"} alignItems={"start"} key={index}>
       <Button
         onClick={() =>
           mintClick(
@@ -393,7 +388,6 @@ export function MintButton({
             setMintsCreated,
             guardList,
             setGuardList,
-            onOpen,
             setCheckEligibility
           )
         }

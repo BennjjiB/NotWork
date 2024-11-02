@@ -11,14 +11,12 @@ import {
   safeFetchCandyGuard,
   CandyGuard,
   CandyMachine,
-  AccountVersion
 } from "@metaplex-foundation/mpl-candy-machine"
 import styles from "../styles/Home.module.css";
 import {guardChecker} from "@/utils/checkAllowed";
 import {
   Heading,
   Text,
-  useDisclosure,
   Image,
   VStack,
   Flex,
@@ -38,7 +36,6 @@ import lord_chest_image from 'assets/Lords_Chest.png';
 import king_chest_image from 'assets/Kings_Chest.png';
 import {StepperInput} from "@/components/ui/stepper-input";
 import {Tag} from "@/components/ui/tag";
-import {image} from "@/settings";
 import {ValueChangeDetails} from "@zag-js/number-input";
 import dynamic from "next/dynamic";
 import {Toaster} from "@/components/ui/toaster";
@@ -50,7 +47,7 @@ const WalletMultiButtonDynamic = dynamic(
 );
 
 // Fetches candy machines and guards
-const fetchCandyMachineAndGuard = (
+const useCandyMachine = (
   umi: Umi,
   candyMachineId: string,
   checkEligibility: boolean,
@@ -66,15 +63,12 @@ const fetchCandyMachineAndGuard = (
       if (checkEligibility) {
         if (!candyMachineId) {
           console.error("No candy machine in .env!");
+          return;
         }
+
         let candyMachine;
         try {
           candyMachine = await fetchCandyMachine(umi, publicKey(candyMachineId));
-          //verify CM Version
-          if (candyMachine.version != AccountVersion.V2) {
-            console.error("Please use latest sugar to create your candy machine. Need Account Version 2!");
-            return;
-          }
         } catch (e) {
           console.error(e);
         }
@@ -105,8 +99,6 @@ const fetchCandyMachineAndGuard = (
 export default function Home() {
   const umi = useUmi();
   const solanaTime = useSolanaTime();
-  const {open: isShowNftOpen, onOpen: onShowNftOpen, onClose: onShowNftClose} = useDisclosure();
-  const {open: isInitializerOpen, onOpen: onInitializerOpen, onClose: onInitializerClose} = useDisclosure();
   const [mintsCreated, setMintsCreated] = useState<{
     mint: PublicKey,
     offChainMetadata: JsonMetadata | undefined
@@ -120,32 +112,26 @@ export default function Home() {
   const [firstRun, setFirstRun] = useState(true);
   const [checkEligibility, setCheckEligibility] = useState<boolean>(true);
 
-  // TODO: Do this for all 3 candy machines ---------------------
-  if (!process.env.NEXT_PUBLIC_CANDY_MACHINE_ID) {
-    console.error("No candy machine in .env!")
-  }
 
-  // Computes the public key of candy machine
-  const candyMachineId: PublicKey = useMemo(() => {
-    if (process.env.NEXT_PUBLIC_CANDY_MACHINE_ID) {
-      return publicKey(process.env.NEXT_PUBLIC_CANDY_MACHINE_ID);
-    } else {
-      console.error(`NO CANDY MACHINE IN .env FILE DEFINED!`);
-      return publicKey("11111111111111111111111111111111");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // Computes the public key of candy machines
+  const knightMachineId: PublicKey = useMemo(() => {
+    return publicKey(process.env.NEXT_PUBLIC_KNIGHT_CANDY_MACHINE_ID!);
+  }, []);
+  const lordMachineId: PublicKey = useMemo(() => {
+    return publicKey(process.env.NEXT_PUBLIC_LORD_CANDY_MACHINE_ID!);
+  }, []);
+  const kingMachineId: PublicKey = useMemo(() => {
+    return publicKey(process.env.NEXT_PUBLIC_KING_CANDY_MACHINE_ID!);
   }, []);
 
-  const {
-    candyMachine,
-    candyGuard
-  } = fetchCandyMachineAndGuard(umi, candyMachineId, checkEligibility, setCheckEligibility, firstRun, setFirstRun);
-
+  const knightCandyMachine = useCandyMachine(umi, knightMachineId, checkEligibility, setCheckEligibility, firstRun, setFirstRun);
+  const lordCandyMachine = useCandyMachine(umi, lordMachineId, checkEligibility, setCheckEligibility, firstRun, setFirstRun);
+  const kingCandyMachine = useCandyMachine(umi, kingMachineId, checkEligibility, setCheckEligibility, firstRun, setFirstRun);
   // ---------------------------------
 
   useEffect(() => {
-    const checkEligibilityFunc = async () => {
-      if (!candyMachine || !candyGuard || !checkEligibility || isShowNftOpen) {
+    const checkEligibilityFunc = async (candyMachine: CandyMachine | undefined, candyGuard: CandyGuard | undefined) => {
+      if (!candyMachine || !candyGuard || !checkEligibility) {
         return;
       }
       setFirstRun(false);
@@ -171,14 +157,45 @@ export default function Home() {
       setLoading(false);
     };
 
-    checkEligibilityFunc();
+    void checkEligibilityFunc(knightCandyMachine.candyMachine, knightCandyMachine.candyGuard);
+    void checkEligibilityFunc(lordCandyMachine.candyMachine, lordCandyMachine.candyGuard);
+    void checkEligibilityFunc(kingCandyMachine.candyMachine, kingCandyMachine.candyGuard);
     // On purpose: not check for candyMachine, candyGuard, solanaTime
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [umi, checkEligibility, firstRun]);
 
+
   // ---------- UI ----------
   const [chestType, setChestType] = useState("Knight");
   const [amount, setAmount] = useState("1");
+
+  function getCandyMachine(name: string): CandyMachine {
+    switch (name) {
+      case "Knight":
+        return knightCandyMachine.candyMachine!
+      case "Lord":
+        return lordCandyMachine.candyMachine!
+      case "King":
+        return kingCandyMachine.candyMachine!
+      default:
+        console.log("CandyMachineIs not allowed")
+        return knightCandyMachine.candyMachine!
+    }
+  }
+
+  function getCandyGuard(name: string): CandyGuard {
+    switch (name) {
+      case "Knight":
+        return knightCandyMachine.candyGuard!
+      case "Lord":
+        return lordCandyMachine.candyGuard!
+      case "King":
+        return kingCandyMachine.candyGuard!
+      default:
+        console.log("CandyMachineIs not allowed")
+        return knightCandyMachine.candyGuard!
+    }
+  }
 
   function getAttributes(name: string) {
     switch (name) {
@@ -324,14 +341,13 @@ export default function Home() {
           text={getButtonText(chestType)}
           mintAmount={+amount}
           guardList={guards}
-          candyMachine={candyMachine}
-          candyGuard={candyGuard}
+          candyMachine={getCandyMachine(chestType)}
+          candyGuard={getCandyGuard(chestType)}
           umi={umi}
           ownedTokens={ownedTokens}
           setGuardList={setGuards}
           mintsCreated={mintsCreated}
           setMintsCreated={setMintsCreated}
-          onOpen={onShowNftOpen}
           setCheckEligibility={setCheckEligibility}
         />
       </Flex>
@@ -351,7 +367,7 @@ export default function Home() {
                _hover={{transform: "scale(1.01)"}}
                fit="cover"
                rounded="2xl"
-               aspectRatio={1 / 1}
+               aspectRatio={1}
                asChild>
           <NextImage src={props.image} alt="..."/>
         </Image>
