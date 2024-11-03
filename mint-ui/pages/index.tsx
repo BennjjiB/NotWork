@@ -1,4 +1,5 @@
 import {
+  amountToNumber,
   PublicKey,
   publicKey,
   Umi,
@@ -21,7 +22,7 @@ import {
   VStack,
   Flex,
   HStack,
-  For
+  For, Button
 } from '@chakra-ui/react';
 import {MintButton} from "@/components/mintButton";
 import {GuardReturn} from "@/utils/checkerHelper";
@@ -279,8 +280,8 @@ export default function Home() {
               {name: "Lord", image: lord_chest_image},
               {name: "King", image: king_chest_image}
             ]}>
-              {(item) => (
-                <ChestTile name={item.name} image={item.image}/>
+              {(item, index) => (
+                <ChestTile key={index} name={item.name} image={item.image}/>
               )}
             </For>
           </HStack>
@@ -291,8 +292,8 @@ export default function Home() {
           <HStack flexWrap="wrap">
             <For
               each={getAttributes(chestType)}>
-              {(item) => (
-                <Tag variant="outline" rounded="md" size={{base: "md", xl: "lg"}}>
+              {(item, index) => (
+                <Tag key={index} variant="outline" rounded="md" size={{base: "md", xl: "lg"}}>
                   <Text fontWeight="medium" paddingX="4" paddingY="2" color="white">{item.name}</Text>
                 </Tag>
               )}
@@ -306,6 +307,26 @@ export default function Home() {
             setAmount(details.value)
           }}/>
         </VStack>
+        <Button onClick={() => {
+          const postData = async (code: string, chestType: string, noOfChests: number) => {
+            const response = await fetch('/api/promotion', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                code: code,
+                chestType: chestType,
+                noOfChests: noOfChests
+              }),
+            });
+            const result = await response.json();
+            console.log(result);
+          };
+          postData("Test", chestType, +amount)
+        }}>
+          Post Test
+        </Button>
         <MintButton
           text={getButtonText(chestType)}
           mintAmount={+amount}
