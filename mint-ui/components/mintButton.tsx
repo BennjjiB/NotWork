@@ -21,7 +21,6 @@ import {
   fetchDigitalAsset,
   fetchJsonMetadata,
 } from "@metaplex-foundation/mpl-token-metadata";
-import {mintText} from "@/settings";
 import {
   fetchAddressLookupTable, setComputeUnitPrice,
 } from "@metaplex-foundation/mpl-toolbox";
@@ -343,7 +342,6 @@ export function MintButton({
   }
   let buttonGuardList = [];
   for (const guard of filteredGuardlist) {
-    const text = mintText.find((elem) => elem.label === guard.label);
     // find guard by label in candyGuard
     const group = candyGuard!.groups.find((elem) => elem.label === guard.label);
     let startTime = createBigInt(0);
@@ -360,11 +358,6 @@ export function MintButton({
     let buttonElement: GuardButtonList = {
       label: guard ? guard.label : "default",
       allowed: guard.allowed,
-      header: text ? text.header : "header missing in settings.tsx",
-      mintText: text ? text.mintText : "mintText missing in settings.tsx",
-      buttonLabel: text
-        ? text.buttonLabel
-        : "buttonLabel missing in settings.tsx",
       startTime,
       endTime,
       tooltip: guard.reason,

@@ -1,4 +1,4 @@
-import { allowLists } from "@/allowlist";
+import {allowLists} from "@/allowlist";
 import {
   CandyGuard,
   CandyMachine,
@@ -28,19 +28,16 @@ import {
   sol,
   BlockhashWithExpiryBlockHeight,
 } from "@metaplex-foundation/umi";
-import { GuardReturn } from "./checkerHelper";
-import { Connection } from "@solana/web3.js";
+import {GuardReturn} from "./checkerHelper";
+import {Connection} from "@solana/web3.js";
 import {
   setComputeUnitPrice,
   setComputeUnitLimit,
   transferSol,
 } from "@metaplex-foundation/mpl-toolbox";
-import { toWeb3JsTransaction } from "@metaplex-foundation/umi-web3js-adapters";
+import {toWeb3JsTransaction} from "@metaplex-foundation/umi-web3js-adapters";
 
 export interface GuardButtonList extends GuardReturn {
-  header: string;
-  mintText: string;
-  buttonLabel: string;
   startTime: bigint;
   endTime: bigint;
   tooltip?: string;
@@ -84,7 +81,7 @@ export const mintArgsBuilder = (
 
   let mintArgs: Partial<DefaultGuardSetMintArgs> = {};
   if (guards.allocation.__option === "Some") {
-    mintArgs.allocation = some({ id: guards.allocation.value.id });
+    mintArgs.allocation = some({id: guards.allocation.value.id});
   }
 
   if (guards.allowList.__option === "Some") {
@@ -92,7 +89,7 @@ export const mintArgsBuilder = (
     if (!allowlist) {
       console.error(`allowlist for guard ${guardToUse.label} not found!`);
     } else {
-      mintArgs.allowList = some({ merkleRoot: getMerkleRoot(allowlist) });
+      mintArgs.allowList = some({merkleRoot: getMerkleRoot(allowlist)});
     }
   }
 
@@ -118,7 +115,7 @@ export const mintArgsBuilder = (
   }
 
   if (guards.mintLimit.__option === "Some") {
-    mintArgs.mintLimit = some({ id: guards.mintLimit.value.id });
+    mintArgs.mintLimit = some({id: guards.mintLimit.value.id});
   }
 
   if (guards.nftBurn.__option === "Some") {
@@ -246,11 +243,11 @@ export const mintArgsBuilder = (
   }
 
   if (guards.tokenBurn.__option === "Some") {
-    mintArgs.tokenBurn = some({ mint: guards.tokenBurn.value.mint });
+    mintArgs.tokenBurn = some({mint: guards.tokenBurn.value.mint});
   }
 
   if (guards.tokenGate.__option === "Some") {
-    mintArgs.tokenGate = some({ mint: guards.tokenGate.value.mint });
+    mintArgs.tokenGate = some({mint: guards.tokenGate.value.mint});
   }
 
   if (guards.tokenPayment.__option === "Some") {
@@ -282,7 +279,7 @@ export const routeBuilder = async (
       merkleRoot: getMerkleRoot(allowlist),
       user: publicKey(umi.identity),
     });
-    console.log("allowListProof",allowListProof)
+    console.log("allowListProof", allowListProof)
     if (allowListProof === null) {
       console.log("null")
       tx2 = tx2.add(
@@ -340,9 +337,9 @@ export const buildTx = (
   guardToUse:
     | GuardGroup<DefaultGuardSet>
     | {
-        label: string;
-        guards: undefined;
-      },
+    label: string;
+    guards: undefined;
+  },
   mintArgs: Partial<DefaultGuardSetMintArgs> | undefined,
   luts: AddressLookupTableInput[],
   latestBlockhash: BlockhashWithExpiryBlockHeight,
@@ -371,8 +368,8 @@ export const buildTx = (
       })
     );
   }
-  tx = tx.prepend(setComputeUnitLimit(umi, { units }));
-  tx = tx.prepend(setComputeUnitPrice(umi, { microLamports: parseInt(process.env.NEXT_PUBLIC_MICROLAMPORTS ?? "1001") }));
+  tx = tx.prepend(setComputeUnitLimit(umi, {units}));
+  tx = tx.prepend(setComputeUnitPrice(umi, {microLamports: parseInt(process.env.NEXT_PUBLIC_MICROLAMPORTS ?? "1001")}));
   tx = tx.setAddressLookupTables(luts);
   tx = tx.setBlockhash(latestBlockhash);
   return tx.build(umi);

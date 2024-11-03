@@ -21,7 +21,7 @@ import {
   VStack,
   Flex,
   HStack,
-  For, Button
+  For
 } from '@chakra-ui/react';
 import {MintButton} from "@/components/mintButton";
 import {GuardReturn} from "@/utils/checkerHelper";
@@ -38,7 +38,7 @@ import {StepperInput} from "@/components/ui/stepper-input";
 import {Tag} from "@/components/ui/tag";
 import {ValueChangeDetails} from "@zag-js/number-input";
 import dynamic from "next/dynamic";
-import {toaster, Toaster} from "@/components/ui/toaster";
+import {Toaster} from "@/components/ui/toaster";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
