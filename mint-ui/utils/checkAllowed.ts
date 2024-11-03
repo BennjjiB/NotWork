@@ -1,6 +1,5 @@
 import {
   AddressGate,
-  Allocation,
   CandyGuard,
   CandyMachine,
   EndDate,
@@ -16,7 +15,6 @@ import {
   TokenBurn,
   TokenGate,
   TokenPayment,
-  getMerkleRoot,
 } from "@metaplex-foundation/mpl-candy-machine";
 import {
   SolAmount,
@@ -37,7 +35,7 @@ import {
   allocationChecker,
   calculateMintable,
 } from "./checkerHelper";
-import { allowLists } from "./../allowlist";
+import { allowLists } from "@/allowlist";
 import {
   DigitalAssetWithToken,
   fetchAllDigitalAssetWithTokenByOwner,

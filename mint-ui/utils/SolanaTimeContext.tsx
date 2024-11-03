@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { getSolanaTime } from "./checkerHelper";
-import { useUmi } from "./useUmi";
+import React, {createContext, useContext, useEffect, useState} from "react";
+import {getSolanaTime} from "./checkerHelper";
+import {useUmi} from "./useUmi";
 
 type SolanaTimeContextType = {
   solanaTime: bigint;
@@ -13,8 +13,8 @@ const SolanaTimeContext = createContext<SolanaTimeContextType>({
 export const useSolanaTime = () => useContext(SolanaTimeContext).solanaTime;
 
 export const SolanaTimeProvider = ({
-  children,
-}: {
+                                     children,
+                                   }: {
   children: React.ReactNode;
 }) => {
   const umi = useUmi();
@@ -29,7 +29,7 @@ export const SolanaTimeProvider = ({
   }, [umi]);
 
   return (
-    <SolanaTimeContext.Provider value={{ solanaTime }}>
+    <SolanaTimeContext.Provider value={{solanaTime}}>
       {children}
     </SolanaTimeContext.Provider>
   );

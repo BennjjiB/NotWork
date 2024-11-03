@@ -1,12 +1,8 @@
 import {BlockhashWithExpiryBlockHeight, PublicKey, Umi} from "@metaplex-foundation/umi";
-import {base58} from "@metaplex-foundation/umi/serializers";
 import {toaster} from "@/components/ui/toaster";
 
 const detectBotTax = (logs: string[]) => {
-  if (logs.find((l) => l.includes("Candy Guard Botting"))) {
-    return true;
-  }
-  return false;
+  return !!logs.find((l) => l.includes("Candy Guard Botting"));
 };
 
 type VerifySignatureResult =
@@ -17,7 +13,6 @@ export const verifyTx = async (umi: Umi, signatures: Uint8Array[], blockhash: Bl
   const verifySignature = async (
     signature: Uint8Array
   ): Promise<VerifySignatureResult> => {
-    console.log(base58.deserialize(signature))
     let transaction;
     for (let i = 0; i < 30; i++) {
       transaction = await umi.rpc.getTransaction(signature);

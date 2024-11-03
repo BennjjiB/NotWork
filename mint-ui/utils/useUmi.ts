@@ -1,5 +1,5 @@
-import type { Umi } from "@metaplex-foundation/umi";
-import { createContext, useContext } from "react";
+import type {Umi} from "@metaplex-foundation/umi";
+import {createContext, useContext} from "react";
 
 type UmiContext = {
   umi: Umi | null;
@@ -16,7 +16,7 @@ export function useUmi(): Umi {
   if (!umi) {
     throw new Error(
       "Umi context was not initialized. " +
-        "Did you forget to wrap your app with <UmiProvider />?"
+      "Did you forget to wrap your app with <UmiProvider />?"
     );
   }
   return umi;
