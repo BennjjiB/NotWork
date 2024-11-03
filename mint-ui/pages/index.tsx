@@ -234,32 +234,6 @@ export default function Home() {
     }
   }
 
-  function getDetailHeader(name: string): string {
-    switch (name) {
-      case "Knight":
-        return "Knight"
-      case "Lord":
-        return "Lord"
-      case "King":
-        return "King"
-      default:
-        return ""
-    }
-  }
-
-  function getDetailText(name: string): string {
-    switch (name) {
-      case "Knight":
-        return "A mighty knight"
-      case "Lord":
-        return "A lordly lord"
-      case "King":
-        return "A kingly king"
-      default:
-        return ""
-    }
-  }
-
   const PageContent = () => {
     return (
       <Flex direction="column" gap={{base: "2rem", lg: "3rem"}}>
@@ -289,12 +263,7 @@ export default function Home() {
         <Image h="100%" aspectRatio={4 / 3} fit="contain" asChild>
           <NextImage src={getDetailImage(chestType)} alt="..."/>
         </Image>
-        <VStack gap="0.5rem">
-          <Heading size="3xl" className={styles.goldEffect}>{getDetailHeader(chestType)}</Heading>
-          <Text textAlign="center">
-            {getDetailText(chestType)}
-          </Text>
-        </VStack>
+        <Heading size="3xl" className={styles.goldEffect}>{chestType}</Heading>
       </VStack>
     )
   }
