@@ -310,7 +310,7 @@ export default function Home() {
               {name: "Lord", image: lord_chest_image},
               {name: "King", image: king_chest_image}
             ]}>
-              {(item, index) => (
+              {(item) => (
                 <ChestTile name={item.name} image={item.image}/>
               )}
             </For>
@@ -322,7 +322,7 @@ export default function Home() {
           <HStack flexWrap="wrap">
             <For
               each={getAttributes(chestType)}>
-              {(item, index) => (
+              {(item) => (
                 <Tag variant="outline" rounded="md" size={{base: "md", xl: "lg"}}>
                   <Text fontWeight="medium" paddingX="4" paddingY="2" color="white">{item.name}</Text>
                 </Tag>
