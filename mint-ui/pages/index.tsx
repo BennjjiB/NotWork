@@ -1,5 +1,4 @@
 import {
-  amountToNumber,
   PublicKey,
   publicKey,
   Umi,
@@ -29,12 +28,12 @@ import {GuardReturn} from "@/utils/checkerHelper";
 import NextImage, {StaticImageData} from 'next/image'
 import {useSolanaTime} from "@/utils/SolanaTimeContext";
 import '@solana/wallet-adapter-react-ui/styles.css';
-import knightAvatar from 'assets/KnightAvatar.png';
-import lordAvatar from 'assets/Lord_Avatar.png';
-import kingAvatar from 'assets/King_Avatar.png';
-import knight_chest_image from 'assets/Knights_Chest.png';
-import lord_chest_image from 'assets/Lords_Chest.png';
-import king_chest_image from 'assets/Kings_Chest.png';
+import knightAvatar from 'public/KnightAvatar.png';
+import lordAvatar from 'public/Lord_Avatar.png';
+import kingAvatar from 'public/King_Avatar.png';
+import knight_chest_image from 'public/Knights_Chest.png';
+import lord_chest_image from 'public/Lords_Chest.png';
+import king_chest_image from 'public/Kings_Chest.png';
 import {StepperInput} from "@/components/ui/stepper-input";
 import {Tag} from "@/components/ui/tag";
 import {ValueChangeDetails} from "@zag-js/number-input";
