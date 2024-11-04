@@ -34,11 +34,10 @@ import kingAvatar from 'public/King_Avatar.png';
 import knight_chest_image from 'public/Knights_Chest.png';
 import lord_chest_image from 'public/Lords_Chest.png';
 import king_chest_image from 'public/Kings_Chest.png';
-import {StepperInput} from "@/components/ui/stepper-input";
 import {Tag} from "@/components/ui/tag";
-import {ValueChangeDetails} from "@zag-js/number-input";
 import dynamic from "next/dynamic";
-import {Toaster} from "@/components/ui/toaster";
+import {NumberInputField, NumberInputRoot} from "@/components/ui/number-input";
+import {ToastContainer} from "react-toastify";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -260,8 +259,8 @@ export default function Home() {
   const Detail = () => {
     return (
       <VStack hideBelow={"lg"} h="100%" flex="0.7" gap="4px">
-        <Image h="100%" aspectRatio={4 / 3} fit="contain" asChild>
-          <NextImage src={getDetailImage(chestType)} alt="..."/>
+        <Image h="100%" aspectRatio={4 / 3} fit="contain" alt="Avatar Image" asChild>
+          <NextImage src={getDetailImage(chestType)} alt={chestType}/>
         </Image>
         <Heading size="3xl" className={styles.goldEffect}>{chestType}</Heading>
       </VStack>
@@ -302,9 +301,22 @@ export default function Home() {
 
         <VStack align="flex-start" gap="0.5rem">
           <Heading>Amount</Heading>
-          <StepperInput color="white" min={1} value={amount} onValueChange={(details: ValueChangeDetails) => {
-            setAmount(details.value)
-          }}/>
+          <NumberInputRoot
+            size={"md"}
+            min={1}
+            value={amount}
+            onValueChange={(details: any) => {
+              if (details.value < 1) {
+                setAmount("1")
+              } else {
+                setAmount(details.value)
+              }
+            }}>
+            <NumberInputField {...{
+              paddingLeft: "1rem",
+              _focus: {borderColor: "white"}
+            }}></NumberInputField>
+          </NumberInputRoot>
         </VStack>
         <Button onClick={() => {
           const postData = async (code: string, chestType: string, noOfChests: number) => {
@@ -357,8 +369,9 @@ export default function Home() {
                fit="cover"
                rounded="2xl"
                aspectRatio={1}
+               alt="Chest Image"
                asChild>
-          <NextImage src={props.image} alt="..."/>
+          <NextImage src={props.image} alt="Chest Image"/>
         </Image>
         <Text>
           {props.name}
@@ -367,10 +380,8 @@ export default function Home() {
     )
   }
 
-
   return (
     <main>
-      <Toaster/>
       <div className={styles.wallet}>
         <WalletMultiButtonDynamic></WalletMultiButtonDynamic>
       </div>
@@ -379,6 +390,18 @@ export default function Home() {
           <PageContent></PageContent>
         </div>
       )}
+      <ToastContainer
+        position="bottom-right"
+        autoClose={2000}
+        hideProgressBar
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </main>
   );
 }
