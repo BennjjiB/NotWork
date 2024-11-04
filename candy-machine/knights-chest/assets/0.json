@@ -1,0 +1,48 @@
+{
+  "name": "Knight's Chest",
+  "symbol": "OT",
+  "description": "A chest filled with powerful items to begin your Otium adventure as a knight.",
+  "seller_fee_basis_points": 500,
+  "external_url": "https://playotium.com",
+  "image": "https://drive.google.com/uc?export=view&id=1PU2N_SxUREZnLT6cGbEJCp_tQrC4r0io",
+  "animation_url": "https://drive.google.com/uc?export=download&id=1I2T3TWRikQusGst5sr7yDiCqGkQ3_yca",
+  "properties": {
+    "files": [
+      {
+        "uri": "https://drive.google.com/uc?export=view&id=1PU2N_SxUREZnLT6cGbEJCp_tQrC4r0io",
+        "type": "image/png"
+      },
+      {
+        "uri": "https://drive.google.com/uc?export=download&id=1I2T3TWRikQusGst5sr7yDiCqGkQ3_yca",
+        "type": "video/mp4"
+      }
+    ],
+    "category": "video"
+  },
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Knight"
+    },
+    {
+      "trait_type": "Card Packs",
+      "value": "2"
+    },
+    {
+      "trait_type": "Cardback",
+      "value": "Knight"
+    },
+    {
+      "trait_type": "Airdrop Boost",
+      "value": "Otium Sword (2,5%)"
+    },
+    {
+      "trait_type": "Mythical Card Chance",
+      "value": "Low"
+    },
+    {
+      "trait_type": "Version",
+      "value": "0"
+    }
+  ]
+}

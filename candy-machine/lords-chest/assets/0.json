@@ -1,0 +1,48 @@
+{
+  "name": "Lord's Chest",
+  "symbol": "OT",
+  "description": "A chest filled with powerful items to begin your Otium adventure as a lord.",
+  "seller_fee_basis_points": 500,
+  "external_url": "https://playotium.com",
+  "image": "https://drive.google.com/uc?export=view&id=1-sutXWJX3gmsy1J1kyXILdZZj3a2SHv3",
+  "animation_url": "https://drive.google.com/uc?export=download&id=1BHcBOPbHegKpVIf0YFP2FPGBp0Jf70At",
+  "properties": {
+    "files": [
+      {
+        "uri": "https://drive.google.com/uc?export=view&id=1-sutXWJX3gmsy1J1kyXILdZZj3a2SHv3",
+        "type": "image/png"
+      },
+      {
+        "uri": "https://drive.google.com/uc?export=download&id=1BHcBOPbHegKpVIf0YFP2FPGBp0Jf70At",
+        "type": "video/mp4"
+      }
+    ],
+    "category": "video"
+  },
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Lord"
+    },
+    {
+      "trait_type": "Card Packs",
+      "value": "5"
+    },
+    {
+      "trait_type": "Cardback",
+      "value": "Lord"
+    },
+    {
+      "trait_type": "Airdrop Boost",
+      "value": "Otium Chalice (5%)"
+    },
+    {
+      "trait_type": "Mythical Card Chance",
+      "value": "Medium"
+    },
+    {
+      "trait_type": "Version",
+      "value": "0"
+    }
+  ]
+}

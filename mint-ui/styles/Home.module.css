@@ -1,0 +1,46 @@
+.wallet {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+}
+
+@media (max-width: 50em) {
+    .wallet {
+        position: inherit;
+        margin-left: calc(100% - 200px);
+        margin-top: 3rem;
+    }
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: flex-start;
+    height: 100%;
+    margin: 0 18vw;
+    padding: 3rem 0;
+}
+
+.chestBorder {
+    background: linear-gradient(white, white) padding-box,
+    linear-gradient(45deg, #A3905E, #E9E9BD) border-box;
+    border: 3px solid transparent;
+}
+
+.goldEffect {
+    /* Fallback: Set a background color. */
+    background-color: white;
+
+    /* Create the gradient. */
+    background-image: linear-gradient(45deg, #A3905E, #E9E9BD);
+
+    /* Set the background size and repeat properties. */
+    background-size: 100%;
+    background-repeat: repeat;
+
+    /* Use the text as a mask for the background. */
+    /* This will show the gradient as a text color rather than element bg. */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}

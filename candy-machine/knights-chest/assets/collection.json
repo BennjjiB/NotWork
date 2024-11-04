@@ -1,0 +1,17 @@
+{
+  "name": "Otium Founder Chests",
+  "symbol": "OT",
+  "image": "https://drive.google.com/uc?export=view&id=1qBZk9S45EmcRG8UDTRwRwGiIwH75NwAm",
+  "external_url": "https://playotium.com",
+  "description": "These chests guarantee power and influence in the Kingdom of Otium. Otium is a win to earn trading card game on Solana.",
+  "seller_fee_basis_points": 500,
+  "properties": {
+    "files": [
+      {
+        "uri": "https://drive.google.com/uc?export=view&id=1qBZk9S45EmcRG8UDTRwRwGiIwH75NwAm",
+        "type": "image/png"
+      }
+    ],
+    "category": "image"
+  }
+}
