@@ -3,13 +3,14 @@ import {WalletProvider} from "@solana/wallet-adapter-react";
 import {WalletModalProvider} from "@solana/wallet-adapter-react-ui";
 import type {AppProps} from "next/app";
 import Head from "next/head";
-import {useMemo} from "react";
+import React, {useMemo} from "react";
 import {UmiProvider} from "@/utils/UmiProvider";
 import "@/styles/globals.css";
 import "@solana/wallet-adapter-react-ui/styles.css";
 import {ChakraProvider, defaultSystem} from '@chakra-ui/react'
 import {image, headerText} from 'settings'
 import {SolanaTimeProvider} from "@/utils/SolanaTimeContext";
+import {ToastContainer} from "react-toastify";
 
 export default function App({Component, pageProps}: AppProps) {
   let network = WalletAdapterNetwork.Devnet;

@@ -37,7 +37,8 @@ import king_chest_image from 'public/Kings_Chest.png';
 import {Tag} from "@/components/ui/tag";
 import dynamic from "next/dynamic";
 import {NumberInputField, NumberInputRoot} from "@/components/ui/number-input";
-import {ToastContainer} from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css'
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -319,6 +320,7 @@ export default function Home() {
           </NumberInputRoot>
         </VStack>
         <Button onClick={() => {
+          toast.success("transactions successful!")
           const postData = async (code: string, chestType: string, noOfChests: number) => {
             const response = await fetch('/api/promotion', {
               method: 'POST',
@@ -388,20 +390,20 @@ export default function Home() {
       {loading ? (<></>) : (
         <div className={styles.content}>
           <PageContent></PageContent>
+          <ToastContainer
+            position="bottom-right"
+            autoClose={2000}
+            hideProgressBar
+            newestOnTop={true}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="dark"
+          />
         </div>
       )}
-      <ToastContainer
-        position="bottom-right"
-        autoClose={2000}
-        hideProgressBar
-        newestOnTop={true}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
     </main>
   );
 }
