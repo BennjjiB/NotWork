@@ -22,7 +22,7 @@ export default function App({Component, pageProps}: AppProps) {
   }
   const wallets = useMemo(
     () => [],
-    [network]
+    []
   );
   return (
     <>

@@ -24,7 +24,7 @@ import {
 import {
   fetchAddressLookupTable, setComputeUnitPrice,
 } from "@metaplex-foundation/mpl-toolbox";
-import {Dispatch, SetStateAction} from "react";
+import React, {Dispatch, SetStateAction} from "react";
 import {
   chooseGuardToUse,
   routeBuilder,
@@ -35,8 +35,8 @@ import {
 } from "@/utils/mintHelper";
 import {verifyTx} from "@/utils/verifyTx";
 import {base58} from "@metaplex-foundation/umi/serializers";
-import {Button} from "@/components/ui/button";
 import {Text, VStack} from "@chakra-ui/react";
+import {Button} from "@/components/ui/button";
 
 const updateLoadingText = (
   loadingText: string | undefined,
@@ -343,6 +343,9 @@ export function MintButton({
   let buttonGuardList = [];
   for (const guard of filteredGuardlist) {
     // find guard by label in candyGuard
+    if (!candyGuard) {
+      return (<></>);
+    }
     const group = candyGuard!.groups.find((elem) => elem.label === guard.label);
     let startTime = createBigInt(0);
     let endTime = createBigInt(0);

@@ -1,5 +1,5 @@
 import {BlockhashWithExpiryBlockHeight, PublicKey, Umi} from "@metaplex-foundation/umi";
-import {toaster} from "@/components/ui/toaster";
+import {toast} from "react-toastify";
 
 const detectBotTax = (logs: string[]) => {
   return !!logs.find((l) => l.includes("Candy Guard Botting"));
@@ -48,21 +48,14 @@ export const verifyTx = async (umi: Umi, signatures: Uint8Array[], blockhash: Bl
 
   if (failed && failed.length > 0) {
     // Failed
-    toaster.create({
-      title: `${failed.length} transactions failed!`,
-      type: "error"
-    })
-
+    toast.error(`${failed.length} transactions failed!`)
     failed.forEach((fail) => {
       console.error(fail)
     })
   }
 
   if (successful.length > 0) {
-    toaster.create({
-      title: `${successful.length} transactions successful!`,
-      type: "success"
-    })
+    toast.success(`${successful.length} transactions successful!`)
   }
 
   return successful;
