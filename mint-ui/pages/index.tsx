@@ -2,18 +2,18 @@ import {
   PublicKey,
   publicKey,
   Umi,
-} from "@metaplex-foundation/umi";
-import {DigitalAssetWithToken, JsonMetadata} from "@metaplex-foundation/mpl-token-metadata";
-import React, {Dispatch, SetStateAction, useEffect, useMemo, useState} from "react";
-import {useUmi} from "@/utils/useUmi";
+} from "@metaplex-foundation/umi"
+import {DigitalAssetWithToken, JsonMetadata} from "@metaplex-foundation/mpl-token-metadata"
+import React, {Dispatch, SetStateAction, useEffect, useMemo, useState} from "react"
+import {useUmi} from "../utils/useUmi"
 import {
   fetchCandyMachine,
   safeFetchCandyGuard,
   CandyGuard,
   CandyMachine,
 } from "@metaplex-foundation/mpl-candy-machine"
-import styles from "../styles/Home.module.css";
-import {guardChecker} from "@/utils/checkAllowed";
+import styles from "../styles/Home.module.css"
+import {guardChecker} from "../utils/checkAllowed"
 import {
   Heading,
   Text,
@@ -22,29 +22,41 @@ import {
   Flex,
   HStack,
   For, Button
-} from '@chakra-ui/react';
-import {MintButton} from "@/components/mintButton";
-import {GuardReturn} from "@/utils/checkerHelper";
+} from '@chakra-ui/react'
 import NextImage, {StaticImageData} from 'next/image'
-import {useSolanaTime} from "@/utils/SolanaTimeContext";
-import '@solana/wallet-adapter-react-ui/styles.css';
-import knightAvatar from 'public/KnightAvatar.png';
-import lordAvatar from 'public/Lord_Avatar.png';
-import kingAvatar from 'public/King_Avatar.png';
-import knight_chest_image from 'public/Knights_Chest.png';
-import lord_chest_image from 'public/Lords_Chest.png';
-import king_chest_image from 'public/Kings_Chest.png';
-import {Tag} from "@/components/ui/tag";
-import dynamic from "next/dynamic";
-import {NumberInputField, NumberInputRoot} from "@/components/ui/number-input";
-import {toast, ToastContainer} from "react-toastify";
+import '@solana/wallet-adapter-react-ui/styles.css'
+import knightAvatar from 'public/KnightAvatar.png'
+import lordAvatar from 'public/Lord_Avatar.png'
+import kingAvatar from 'public/King_Avatar.png'
+import knight_chest_image from 'public/Knights_Chest.png'
+import lord_chest_image from 'public/Lords_Chest.png'
+import king_chest_image from 'public/Kings_Chest.png'
+import dynamic from "next/dynamic"
+import {toast, ToastContainer} from "react-toastify"
 import 'react-toastify/dist/ReactToastify.css'
+import {StepperInput} from "../components/ui/stepper-input"
+import {useSolanaTime} from "../utils/SolanaTimeContext"
+import {GuardReturn} from "../utils/checkerHelper"
+import {Tag} from "../components/ui/tag"
+import {MintButton} from "../components/mintButton"
+import {
+  DialogActionTrigger,
+  DialogBody, DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogRoot,
+  DialogTitle,
+  DialogTrigger
+} from "../components/ui/dialog"
+import {createEvent} from "react-event-hook"
+import {emitOpenDialog, useOpenDialogListener} from "../utils/events"
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
     (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
   {ssr: false}
-);
+)
 
 // Fetches candy machines and guards
 const useCandyMachine = (
@@ -55,119 +67,119 @@ const useCandyMachine = (
   firstRun: boolean,
   setfirstRun: Dispatch<SetStateAction<boolean>>
 ) => {
-  const [candyMachine, setCandyMachine] = useState<CandyMachine>();
-  const [candyGuard, setCandyGuard] = useState<CandyGuard>();
+  const [candyMachine, setCandyMachine] = useState<CandyMachine>()
+  const [candyGuard, setCandyGuard] = useState<CandyGuard>()
 
   useEffect(() => {
     (async () => {
       if (checkEligibility) {
         if (!candyMachineId) {
-          console.error("No candy machine in .env!");
-          return;
+          console.error("No candy machine in .env!")
+          return
         }
 
-        let candyMachine;
+        let candyMachine
         try {
-          candyMachine = await fetchCandyMachine(umi, publicKey(candyMachineId));
+          candyMachine = await fetchCandyMachine(umi, publicKey(candyMachineId))
         } catch (e) {
-          console.error(e);
+          console.error(e)
         }
-        setCandyMachine(candyMachine);
+        setCandyMachine(candyMachine)
         if (!candyMachine) {
-          return;
+          return
         }
-        let candyGuard;
+        let candyGuard
         try {
-          candyGuard = await safeFetchCandyGuard(umi, candyMachine.mintAuthority);
+          candyGuard = await safeFetchCandyGuard(umi, candyMachine.mintAuthority)
         } catch (e) {
-          console.error(e);
+          console.error(e)
         }
         if (!candyGuard) {
-          return;
+          return
         }
-        setCandyGuard(candyGuard);
+        setCandyGuard(candyGuard)
         if (firstRun) {
           setfirstRun(false)
         }
       }
-    })();
-  }, [umi, checkEligibility]);
-  return {candyMachine, candyGuard};
-};
+    })()
+  }, [umi, checkEligibility])
+  return {candyMachine, candyGuard}
+}
 
 
 export default function Home() {
-  const umi = useUmi();
-  const solanaTime = useSolanaTime();
+  const umi = useUmi()
+  const solanaTime = useSolanaTime()
   const [mintsCreated, setMintsCreated] = useState<{
     mint: PublicKey,
     offChainMetadata: JsonMetadata | undefined
-  }[] | undefined>();
-  const [isAllowed, setIsAllowed] = useState<boolean>(false);
-  const [loading, setLoading] = useState(true);
-  const [ownedTokens, setOwnedTokens] = useState<DigitalAssetWithToken[]>();
+  }[] | undefined>()
+  const [isAllowed, setIsAllowed] = useState<boolean>(false)
+  const [loading, setLoading] = useState(true)
+  const [ownedTokens, setOwnedTokens] = useState<DigitalAssetWithToken[]>()
   const [guards, setGuards] = useState<GuardReturn[]>([
     {label: "startDefault", allowed: false, maxAmount: 0},
-  ]);
-  const [firstRun, setFirstRun] = useState(true);
-  const [checkEligibility, setCheckEligibility] = useState<boolean>(true);
+  ])
+  const [firstRun, setFirstRun] = useState(true)
+  const [checkEligibility, setCheckEligibility] = useState<boolean>(true)
 
 
   // Computes the public key of candy machines
   const knightMachineId: PublicKey = useMemo(() => {
-    return publicKey(process.env.NEXT_PUBLIC_KNIGHT_CANDY_MACHINE_ID!);
-  }, []);
+    return publicKey(process.env.NEXT_PUBLIC_KNIGHT_CANDY_MACHINE_ID!)
+  }, [])
   const lordMachineId: PublicKey = useMemo(() => {
-    return publicKey(process.env.NEXT_PUBLIC_LORD_CANDY_MACHINE_ID!);
-  }, []);
+    return publicKey(process.env.NEXT_PUBLIC_LORD_CANDY_MACHINE_ID!)
+  }, [])
   const kingMachineId: PublicKey = useMemo(() => {
-    return publicKey(process.env.NEXT_PUBLIC_KING_CANDY_MACHINE_ID!);
-  }, []);
+    return publicKey(process.env.NEXT_PUBLIC_KING_CANDY_MACHINE_ID!)
+  }, [])
 
-  const knightCandyMachine = useCandyMachine(umi, knightMachineId, checkEligibility, setCheckEligibility, firstRun, setFirstRun);
-  const lordCandyMachine = useCandyMachine(umi, lordMachineId, checkEligibility, setCheckEligibility, firstRun, setFirstRun);
-  const kingCandyMachine = useCandyMachine(umi, kingMachineId, checkEligibility, setCheckEligibility, firstRun, setFirstRun);
+  const knightCandyMachine = useCandyMachine(umi, knightMachineId, checkEligibility, setCheckEligibility, firstRun, setFirstRun)
+  const lordCandyMachine = useCandyMachine(umi, lordMachineId, checkEligibility, setCheckEligibility, firstRun, setFirstRun)
+  const kingCandyMachine = useCandyMachine(umi, kingMachineId, checkEligibility, setCheckEligibility, firstRun, setFirstRun)
   // ---------------------------------
 
   useEffect(() => {
     const checkEligibilityFunc = async (candyMachine: CandyMachine | undefined, candyGuard: CandyGuard | undefined) => {
       if (!candyMachine || !candyGuard || !checkEligibility) {
-        return;
+        return
       }
-      setFirstRun(false);
+      setFirstRun(false)
 
       const {guardReturn, ownedTokens} = await guardChecker(
         umi, candyGuard, candyMachine, solanaTime
-      );
+      )
 
-      setOwnedTokens(ownedTokens);
-      setGuards(guardReturn);
-      setIsAllowed(false);
+      setOwnedTokens(ownedTokens)
+      setGuards(guardReturn)
+      setIsAllowed(false)
 
       // Checks if all guards are allowed
-      let allowed = false;
+      let allowed = false
       for (const guard of guardReturn) {
         if (guard.allowed) {
-          allowed = true;
-          break;
+          allowed = true
+          break
         }
       }
 
-      setIsAllowed(allowed);
-      setLoading(false);
-    };
+      setIsAllowed(allowed)
+      setLoading(false)
+    }
 
-    void checkEligibilityFunc(knightCandyMachine.candyMachine, knightCandyMachine.candyGuard);
-    void checkEligibilityFunc(lordCandyMachine.candyMachine, lordCandyMachine.candyGuard);
-    void checkEligibilityFunc(kingCandyMachine.candyMachine, kingCandyMachine.candyGuard);
+    void checkEligibilityFunc(knightCandyMachine.candyMachine, knightCandyMachine.candyGuard)
+    void checkEligibilityFunc(lordCandyMachine.candyMachine, lordCandyMachine.candyGuard)
+    void checkEligibilityFunc(kingCandyMachine.candyMachine, kingCandyMachine.candyGuard)
     // On purpose: not check for candyMachine, candyGuard, solanaTime
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [umi, checkEligibility, firstRun]);
+  }, [umi, checkEligibility, firstRun])
 
 
   // ---------- UI ----------
-  const [chestType, setChestType] = useState("Knight");
-  const [amount, setAmount] = useState("1");
+  const [chestType, setChestType] = useState("Knight")
+  const [amount, setAmount] = useState("1")
 
   function getCandyMachine(name: string): CandyMachine {
     switch (name) {
@@ -302,22 +314,9 @@ export default function Home() {
 
         <VStack align="flex-start" gap="0.5rem">
           <Heading>Amount</Heading>
-          <NumberInputRoot
-            size={"md"}
-            min={1}
-            value={amount}
-            onValueChange={(details: any) => {
-              if (details.value < 1) {
-                setAmount("1")
-              } else {
-                setAmount(details.value)
-              }
-            }}>
-            <NumberInputField {...{
-              paddingLeft: "1rem",
-              _focus: {borderColor: "white"}
-            }}></NumberInputField>
-          </NumberInputRoot>
+          <StepperInput color="white" min={1} value={amount} onValueChange={(details: any) => {
+            setAmount(details.value)
+          }}/>
         </VStack>
         <Button onClick={() => {
           toast.success("transactions successful!")
@@ -332,10 +331,10 @@ export default function Home() {
                 chestType: chestType,
                 noOfChests: noOfChests
               }),
-            });
-            const result = await response.json();
-            console.log(result);
-          };
+            })
+            const result = await response.json()
+            console.log(result)
+          }
           postData("Test", chestType, +amount)
         }}>
           Post Test
@@ -382,6 +381,41 @@ export default function Home() {
     )
   }
 
+  const [openDialog, setDialogOpen] = useState(false)
+  useOpenDialogListener((state) => {
+    setDialogOpen(state)
+  })
+
+  const DialogView = () => {
+    return (
+      <DialogRoot
+        lazyMount open={openDialog}
+        onOpenChange={(e) => setDialogOpen(e.open)}
+        placement={"center"}
+        motionPreset="slide-in-bottom"
+      >
+        <DialogContent alignItems={"center"} backgroundColor={"rgb(var(--background-rgb))"}>
+          <DialogHeader>
+            <DialogTitle>Dialog Title</DialogTitle>
+          </DialogHeader>
+          <DialogBody>
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+              do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </p>
+          </DialogBody>
+          <DialogFooter>
+            <DialogActionTrigger asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogActionTrigger>
+            <Button>Save</Button>
+          </DialogFooter>
+          <DialogCloseTrigger/>
+        </DialogContent>
+      </DialogRoot>
+    )
+  }
+
   return (
     <main>
       <div className={styles.wallet}>
@@ -390,6 +424,7 @@ export default function Home() {
       {loading ? (<></>) : (
         <div className={styles.content}>
           <PageContent></PageContent>
+          <DialogView></DialogView>
           <ToastContainer
             position="bottom-right"
             autoClose={2000}
@@ -405,5 +440,5 @@ export default function Home() {
         </div>
       )}
     </main>
-  );
+  )
 }

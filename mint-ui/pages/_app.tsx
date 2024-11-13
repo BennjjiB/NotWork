@@ -1,30 +1,29 @@
-import {WalletAdapterNetwork} from "@solana/wallet-adapter-base";
-import {WalletProvider} from "@solana/wallet-adapter-react";
-import {WalletModalProvider} from "@solana/wallet-adapter-react-ui";
-import type {AppProps} from "next/app";
-import Head from "next/head";
-import React, {useMemo} from "react";
-import {UmiProvider} from "@/utils/UmiProvider";
-import "@/styles/globals.css";
-import "@solana/wallet-adapter-react-ui/styles.css";
+import {WalletAdapterNetwork} from "@solana/wallet-adapter-base"
+import {WalletProvider} from "@solana/wallet-adapter-react"
+import {WalletModalProvider} from "@solana/wallet-adapter-react-ui"
+import type {AppProps} from "next/app"
+import Head from "next/head"
+import React, {useMemo} from "react"
+import "../styles/globals.css"
+import "@solana/wallet-adapter-react-ui/styles.css"
 import {ChakraProvider, defaultSystem} from '@chakra-ui/react'
 import {image, headerText} from 'settings'
-import {SolanaTimeProvider} from "@/utils/SolanaTimeContext";
-import {ToastContainer} from "react-toastify";
+import {UmiProvider} from "../utils/UmiProvider"
+import {SolanaTimeProvider} from "../utils/SolanaTimeContext"
 
 export default function App({Component, pageProps}: AppProps) {
-  let network = WalletAdapterNetwork.Devnet;
+  let network = WalletAdapterNetwork.Devnet
   if (process.env.NEXT_PUBLIC_ENVIRONMENT === "mainnet-beta" || process.env.NEXT_PUBLIC_ENVIRONMENT === "mainnet") {
-    network = WalletAdapterNetwork.Mainnet;
+    network = WalletAdapterNetwork.Mainnet
   }
-  let endpoint = "https://api.devnet.solana.com";
+  let endpoint = "https://api.devnet.solana.com"
   if (process.env.NEXT_PUBLIC_RPC) {
-    endpoint = process.env.NEXT_PUBLIC_RPC;
+    endpoint = process.env.NEXT_PUBLIC_RPC
   }
   const wallets = useMemo(
     () => [],
     []
-  );
+  )
   return (
     <>
       <Head>
@@ -56,5 +55,5 @@ export default function App({Component, pageProps}: AppProps) {
         </WalletProvider>
       </ChakraProvider>
     </>
-  );
+  )
 }

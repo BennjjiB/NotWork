@@ -1,4 +1,4 @@
-import {allowLists} from "@/allowlist";
+import {allowLists} from "../allowlist";
 import {
   CandyGuard,
   CandyMachine,
