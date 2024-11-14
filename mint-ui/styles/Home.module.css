@@ -28,6 +28,14 @@
     border: 3px solid transparent;
 }
 
+.clipboard::-moz-selection {
+    background: rgb(var(--tertiary-background-rgb));
+}
+
+.clipboard::selection {
+    background: rgb(var(--tertiary-background-rgb));
+}
+
 .goldEffect {
     /* Fallback: Set a background color. */
     background-color: white;

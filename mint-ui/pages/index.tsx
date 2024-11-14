@@ -4,7 +4,7 @@ import {
   Umi,
 } from "@metaplex-foundation/umi"
 import {DigitalAssetWithToken, JsonMetadata} from "@metaplex-foundation/mpl-token-metadata"
-import React, {Dispatch, SetStateAction, useEffect, useMemo, useState} from "react"
+import React, {Dispatch, SetStateAction, useEffect, useMemo, useRef, useState} from "react"
 import {useUmi} from "../utils/useUmi"
 import {
   fetchCandyMachine,
@@ -21,7 +21,7 @@ import {
   VStack,
   Flex,
   HStack,
-  For, Button
+  For, Button, Input
 } from '@chakra-ui/react'
 import NextImage, {StaticImageData} from 'next/image'
 import '@solana/wallet-adapter-react-ui/styles.css'
@@ -31,6 +31,7 @@ import kingAvatar from 'public/King_Avatar.png'
 import knight_chest_image from 'public/Knights_Chest.png'
 import lord_chest_image from 'public/Lords_Chest.png'
 import king_chest_image from 'public/Kings_Chest.png'
+import referral_image from 'public/referral_image.png'
 import dynamic from "next/dynamic"
 import {toast, ToastContainer} from "react-toastify"
 import 'react-toastify/dist/ReactToastify.css'
@@ -40,17 +41,16 @@ import {GuardReturn} from "../utils/checkerHelper"
 import {Tag} from "../components/ui/tag"
 import {MintButton} from "../components/mintButton"
 import {
-  DialogActionTrigger,
   DialogBody, DialogCloseTrigger,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogRoot,
-  DialogTitle,
-  DialogTrigger
 } from "../components/ui/dialog"
-import {createEvent} from "react-event-hook"
-import {emitOpenDialog, useOpenDialogListener} from "../utils/events"
+import {useOpenDialogListener} from "../utils/events"
+import {ClipboardIconButton, ClipboardInput, ClipboardLabel, ClipboardRoot} from "../components/ui/clipboard"
+import {InputGroup} from "../components/ui/input-group"
+import {useSearchParams} from "next/navigation"
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -105,6 +105,17 @@ const useCandyMachine = (
     })()
   }, [umi, checkEligibility])
   return {candyMachine, candyGuard}
+}
+
+function useGetAllSearchParams() {
+  const searchParams = useSearchParams()
+  const params: { [anyProp: string]: string } = {}
+
+  searchParams.forEach((value, key) => {
+    params[key] = value
+  })
+
+  return params
 }
 
 
@@ -251,8 +262,7 @@ export default function Home() {
       <Flex direction="column" gap={{base: "2rem", lg: "3rem"}}>
         <VStack gap={{base: "0.5rem", lg: "1rem"}}>
           <Heading textAlign="center" textStyle={{base: "4xl", lg: "6xl"}} className={styles.goldEffect}>Secure your
-            Founder
-            Chest</Heading>
+            Founder Chest</Heading>
           <Text textAlign="center">
             Prepare to immerse yourself in the thrilling world of Otium with our exclusive presale!
             For a limited time you have the chance to purchase three unique tiers of chests, each brimming with
@@ -393,24 +403,51 @@ export default function Home() {
         onOpenChange={(e) => setDialogOpen(e.open)}
         placement={"center"}
         motionPreset="slide-in-bottom"
+        size={"lg"}
       >
-        <DialogContent alignItems={"center"} backgroundColor={"rgb(var(--background-rgb))"}>
-          <DialogHeader>
-            <DialogTitle>Dialog Title</DialogTitle>
+        <DialogContent p="1rem" alignItems={"center"} gap={"1rem"} backgroundColor={"rgb(var(--background-rgb))"}>
+          <DialogHeader display="flex" flexDirection="column" gap="0.5rem" alignItems={"center"}>
+            <Heading textAlign="center" textStyle={{base: "2xl", lg: "4xl"}} className={styles.goldEffect}>
+              You obtained a Founder Chest!
+            </Heading>
+            <Text textAlign={"center"}>
+              Thank you for your purchase and good luck claiming the throne!<br/>
+              You can find your chest in your wallet.
+            </Text>
           </DialogHeader>
-          <DialogBody>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-              do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            </p>
+          <DialogBody w="90%">
+            <Image borderRadius="12px" w="100%" fit="fill" alt="Avatar Image" asChild>
+              <NextImage src={referral_image} alt={"Referral link image"}/>
+            </Image>
           </DialogBody>
-          <DialogFooter>
-            <DialogActionTrigger asChild>
-              <Button variant="outline">Cancel</Button>
-            </DialogActionTrigger>
-            <Button>Save</Button>
+          <DialogFooter width={"70%"}>
+            <ClipboardRoot
+              display="flex"
+              flexDirection="column"
+              alignItems={"center"}
+              width={"100%"}
+              value="https://sharechakra-ui.com/dfr3def"
+            >
+              <InputGroup
+                width="100%"
+                endElement={
+                  <ClipboardIconButton
+                    backgroundColor={"rgb(var(--secondary-background-rgb))"}
+                    _hover={{background: "rgb(var(--tertiary-background-rgb))"}}
+                    color={"white"}
+                    me="2"/>
+                }
+              >
+                <ClipboardInput
+                  paddingStart="0.5rem"
+                  borderColor={"rgb(var(--secondary-background-rgb))"}
+                  _focus={{borderColor: "white"}}
+                  className={styles.clipboard}
+                />
+              </InputGroup>
+            </ClipboardRoot>
           </DialogFooter>
-          <DialogCloseTrigger/>
+          <DialogCloseTrigger color={"white"} _hover={{background: "rgb(var(--secondary-background-rgb))"}}/>
         </DialogContent>
       </DialogRoot>
     )
