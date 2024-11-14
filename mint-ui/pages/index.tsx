@@ -4,7 +4,7 @@ import {
   Umi,
 } from "@metaplex-foundation/umi"
 import {DigitalAssetWithToken, JsonMetadata} from "@metaplex-foundation/mpl-token-metadata"
-import React, {Dispatch, SetStateAction, useEffect, useMemo, useRef, useState} from "react"
+import React, {Dispatch, SetStateAction, useEffect, useMemo, useState} from "react"
 import {useUmi} from "../utils/useUmi"
 import {
   fetchCandyMachine,
@@ -21,7 +21,7 @@ import {
   VStack,
   Flex,
   HStack,
-  For, Button, Input
+  For, Button
 } from '@chakra-ui/react'
 import NextImage, {StaticImageData} from 'next/image'
 import '@solana/wallet-adapter-react-ui/styles.css'
@@ -48,8 +48,9 @@ import {
   DialogRoot,
 } from "../components/ui/dialog"
 import {useOpenDialogListener} from "../utils/events"
-import {ClipboardIconButton, ClipboardInput, ClipboardLabel, ClipboardRoot} from "../components/ui/clipboard"
+import {ClipboardIconButton, ClipboardInput, ClipboardRoot} from "../components/ui/clipboard"
 import {InputGroup} from "../components/ui/input-group"
+import {createReferralLink} from "../utils/createReferralLink"
 import {useSearchParams} from "next/navigation"
 
 const WalletMultiButtonDynamic = dynamic(
@@ -106,18 +107,6 @@ const useCandyMachine = (
   }, [umi, checkEligibility])
   return {candyMachine, candyGuard}
 }
-
-function useGetAllSearchParams() {
-  const searchParams = useSearchParams()
-  const params: { [anyProp: string]: string } = {}
-
-  searchParams.forEach((value, key) => {
-    params[key] = value
-  })
-
-  return params
-}
-
 
 export default function Home() {
   const umi = useUmi()
@@ -189,6 +178,8 @@ export default function Home() {
 
 
   // ---------- UI ----------
+  const searchParams = useSearchParams()
+
   const [chestType, setChestType] = useState("Knight")
   const [amount, setAmount] = useState("1")
 
@@ -329,8 +320,10 @@ export default function Home() {
           }}/>
         </VStack>
         <Button onClick={() => {
-          toast.success("transactions successful!")
           const postData = async (code: string, chestType: string, noOfChests: number) => {
+            const referralCode = searchParams.get('referralCode')
+            const friendCode = searchParams.get('friendCode')
+            toast.success(referralCode)
             const response = await fetch('/api/promotion', {
               method: 'POST',
               headers: {
@@ -391,7 +384,7 @@ export default function Home() {
     )
   }
 
-  const [openDialog, setDialogOpen] = useState(false)
+  const [openDialog, setDialogOpen] = useState(true)
   useOpenDialogListener((state) => {
     setDialogOpen(state)
   })
@@ -426,7 +419,7 @@ export default function Home() {
               flexDirection="column"
               alignItems={"center"}
               width={"100%"}
-              value="https://sharechakra-ui.com/dfr3def"
+              value={createReferralLink(umi.payer.publicKey)}
             >
               <InputGroup
                 width="100%"

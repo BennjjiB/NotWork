@@ -7,7 +7,6 @@ import {
 } from "@chakra-ui/react"
 import {forwardRef} from "react"
 import {LuCheck, LuClipboard, LuLink} from "react-icons/lu"
-import styles from "../../styles/Home.module.css"
 
 const ClipboardIcon = forwardRef<
   HTMLDivElement,
