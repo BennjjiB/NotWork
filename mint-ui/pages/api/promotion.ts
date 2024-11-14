@@ -9,7 +9,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const data = req.body
     try {
       await redis.hincrby(data.code, data.chestType, data.noOfChests)
-      const result = await redis.hgetall(data.code)
       return res.status(200).end()
     } catch (e) {
       return res.status(405).end(`Data base did not work!`)

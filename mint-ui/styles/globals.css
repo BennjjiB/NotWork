@@ -17,7 +17,7 @@
     --hover-background-rgb: 42, 42, 42;
 }
 
-@media (prefers-color-scheme: dark) {
+@media(prefers-color-scheme: dark) {
     :root {
         --accent-rgb: 3, 255, 189;
         --darker-accent-rgb: 0, 204, 150;
