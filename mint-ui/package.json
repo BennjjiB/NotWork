@@ -29,6 +29,7 @@
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",
     "@types/react-slick": "0.23.13",
+    "@upstash/redis": "^1.34.3",
     "eslint": "9.14.0",
     "eslint-config-next": "15.0.2",
     "express-rate-limit": "^7.4.1",
@@ -40,7 +41,8 @@
     "react-slick": "0.30.2",
     "react-toastify": "^10.0.6",
     "tabbable": "6.2.0",
-    "typescript": "5.6.3"
+    "typescript": "5.6.3",
+    "vercel": "^39.0.0"
   },
   "devDependencies": {
     "@chakra-ui/cli": "3.0.2",

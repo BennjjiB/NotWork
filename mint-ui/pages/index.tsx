@@ -50,8 +50,7 @@ import {
 import {useOpenDialogListener} from "../utils/events"
 import {ClipboardIconButton, ClipboardInput, ClipboardRoot} from "../components/ui/clipboard"
 import {InputGroup} from "../components/ui/input-group"
-import {createReferralLink} from "../utils/createReferralLink"
-import {useSearchParams} from "next/navigation"
+import {createReferralLink} from "../utils/referral"
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -178,8 +177,6 @@ export default function Home() {
 
 
   // ---------- UI ----------
-  const searchParams = useSearchParams()
-
   const [chestType, setChestType] = useState("Knight")
   const [amount, setAmount] = useState("1")
 
@@ -319,29 +316,6 @@ export default function Home() {
             setAmount(details.value)
           }}/>
         </VStack>
-        <Button onClick={() => {
-          const postData = async (code: string, chestType: string, noOfChests: number) => {
-            const referralCode = searchParams.get('referralCode')
-            const friendCode = searchParams.get('friendCode')
-            toast.success(referralCode)
-            const response = await fetch('/api/promotion', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                code: code,
-                chestType: chestType,
-                noOfChests: noOfChests
-              }),
-            })
-            const result = await response.json()
-            console.log(result)
-          }
-          postData("Test", chestType, +amount)
-        }}>
-          Post Test
-        </Button>
         <MintButton
           text={getButtonText(chestType)}
           mintAmount={+amount}
@@ -354,7 +328,7 @@ export default function Home() {
           mintsCreated={mintsCreated}
           setMintsCreated={setMintsCreated}
           setCheckEligibility={setCheckEligibility}
-        />
+          chestType={chestType}/>
       </Flex>
     )
   }
@@ -384,7 +358,7 @@ export default function Home() {
     )
   }
 
-  const [openDialog, setDialogOpen] = useState(true)
+  const [openDialog, setDialogOpen] = useState(false)
   useOpenDialogListener((state) => {
     setDialogOpen(state)
   })
@@ -392,8 +366,15 @@ export default function Home() {
   const DialogView = () => {
     return (
       <DialogRoot
-        lazyMount open={openDialog}
-        onOpenChange={(e) => setDialogOpen(e.open)}
+        lazyMount
+        open={openDialog}
+        onOpenChange={(e) => {
+          if (!e.open) {
+            setAmount("1")
+            setChestType("Knight")
+            setDialogOpen(e.open)
+          }
+        }}
         placement={"center"}
         motionPreset="slide-in-bottom"
         size={"lg"}

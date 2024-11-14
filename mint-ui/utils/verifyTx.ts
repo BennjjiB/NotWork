@@ -54,10 +54,5 @@ export const verifyTx = async (umi: Umi, signatures: Uint8Array[], blockhash: Bl
       console.error(fail)
     })
   }
-
-  if (successful.length > 0) {
-    emitOpenDialog(true)
-  }
-
   return successful
 }

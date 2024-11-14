@@ -37,6 +37,9 @@ import {base58} from "@metaplex-foundation/umi/serializers"
 import {Text, VStack} from "@chakra-ui/react"
 import {GuardReturn} from "../utils/checkerHelper"
 import {Button} from "./ui/button"
+import {registerReferralUsage} from "../utils/referral"
+import {ReadonlyURLSearchParams, useSearchParams} from "next/navigation"
+import {emitOpenDialog} from "../utils/events"
 
 const updateLoadingText = (
   loadingText: string | undefined,
@@ -91,7 +94,9 @@ const mintClick = async (
   >,
   guardList: GuardReturn[],
   setGuardList: Dispatch<SetStateAction<GuardReturn[]>>,
-  setCheckEligibility: Dispatch<SetStateAction<boolean>>
+  setCheckEligibility: Dispatch<SetStateAction<boolean>>,
+  chestType: string,
+  searchParams: ReadonlyURLSearchParams
 ) => {
   const guardToUse = chooseGuardToUse(guard, candyGuard)
   if (!guardToUse.guards) {
@@ -238,39 +243,10 @@ const mintClick = async (
 
     const successfulMints = await verifyTx(umi, signatures, latestBlockhash, "finalized")
 
-    updateLoadingText(
-      "Fetching your NFT",
-      guardList,
-      guardToUse.label,
-      setGuardList
-    )
-
-    // Filter out successful mints and map to fetch promises
-    const fetchNftPromises = successfulMints.map((mintResult) =>
-      fetchNft(umi, mintResult).then((nftData) => ({
-        mint: mintResult,
-        nftData,
-      }))
-    )
-
-    const fetchedNftsResults = await Promise.all(fetchNftPromises)
-
-    // Prepare data for setting mintsCreated
-    let newMintsCreated: { mint: PublicKey; offChainMetadata: JsonMetadata }[] =
-      []
-    fetchedNftsResults.map((acc) => {
-      if (acc.nftData.digitalAsset && acc.nftData.jsonMetadata) {
-        newMintsCreated.push({
-          mint: acc.mint,
-          offChainMetadata: acc.nftData.jsonMetadata,
-        })
-      }
-      return acc
-    }, [])
-
-    // Update mintsCreated only if there are new mints
-    if (newMintsCreated.length > 0) {
-      setMintsCreated(newMintsCreated)
+    // Referral Program Logic ----------------------
+    if (successfulMints.length > 0) {
+      emitOpenDialog(true)
+      await registerReferralUsage(searchParams, umi.payer.publicKey, chestType, mintAmount)
     }
   } catch (e) {
     console.error(`minting failed because of ${e}`)
@@ -293,12 +269,13 @@ const mintClick = async (
 type Props = {
   text: String,
   mintAmount: number,
-  umi: Umi;
-  guardList: GuardReturn[];
-  candyMachine: CandyMachine | undefined;
-  candyGuard: CandyGuard | undefined;
-  ownedTokens: DigitalAssetWithToken[] | undefined;
-  setGuardList: Dispatch<SetStateAction<GuardReturn[]>>;
+  chestType: string,
+  umi: Umi,
+  guardList: GuardReturn[],
+  candyMachine: CandyMachine | undefined,
+  candyGuard: CandyGuard | undefined,
+  ownedTokens: DigitalAssetWithToken[] | undefined,
+  setGuardList: Dispatch<SetStateAction<GuardReturn[]>>,
   mintsCreated:
     | {
     mint: PublicKey;
@@ -310,13 +287,14 @@ type Props = {
       | { mint: PublicKey; offChainMetadata: JsonMetadata | undefined }[]
       | undefined
     >
-  >;
-  setCheckEligibility: Dispatch<SetStateAction<boolean>>;
+  >,
+  setCheckEligibility: Dispatch<SetStateAction<boolean>>
 };
 
 export function MintButton({
                              text,
                              mintAmount,
+                             chestType,
                              umi,
                              guardList,
                              candyMachine,
@@ -325,8 +303,10 @@ export function MintButton({
                              setGuardList,
                              mintsCreated,
                              setMintsCreated,
-                             setCheckEligibility,
+                             setCheckEligibility
                            }: Props): JSX.Element {
+  const searchParams = useSearchParams()
+
   // remove duplicates from guardList
   //fucked up bugfix
   let filteredGuardlist = guardList.filter(
@@ -384,7 +364,9 @@ export function MintButton({
             setMintsCreated,
             guardList,
             setGuardList,
-            setCheckEligibility
+            setCheckEligibility,
+            chestType,
+            searchParams
           )
         }
         rounded="lg"

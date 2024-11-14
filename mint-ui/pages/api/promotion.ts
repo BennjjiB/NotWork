@@ -1,20 +1,21 @@
-import type {NextApiRequest, NextApiResponse} from "next";
-import fs from "fs";
+import type {NextApiRequest, NextApiResponse} from "next"
+import {Redis} from '@upstash/redis'
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+// Initialize Redis
+const redis = Redis.fromEnv()
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
-    const data = req.body;
-    const jsonString = JSON.stringify(data)
-    console.log(jsonString)
-    fs.appendFile('test.txt', jsonString, 'utf8', (err: any) => {
-      if (err) {
-        console.error(err);
-      } else {
-        console.log("Worked");
-      }
-    })
+    const data = req.body
+    try {
+      await redis.hincrby(data.code, data.chestType, data.noOfChests)
+      const result = await redis.hgetall(data.code)
+      return res.status(200).end()
+    } catch (e) {
+      return res.status(405).end(`Data base did not work!`)
+    }
   } else {
-    res.setHeader('Allow', ['POST']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+    res.setHeader('Allow', ['POST'])
+    return res.status(405).end(`Method ${req.method} Not Allowed`)
   }
 }
