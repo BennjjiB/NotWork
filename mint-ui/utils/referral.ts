@@ -8,7 +8,6 @@ export async function registerReferralUsage(searchParams: ReadonlyURLSearchParam
   if (!code || code == pubAddress) {
     return
   }
-  console.log(code)
 
   const response = await fetch('/api/promotion', {
     method: 'POST',
