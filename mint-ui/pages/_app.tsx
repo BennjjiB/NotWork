@@ -31,9 +31,10 @@ export default function App({Component, pageProps}: AppProps) {
         <meta property="og:title" content={headerText}/>
         <meta
           property="og:description"
-          content="Official Otium Founder Chest minting page"
+          content="Join the exclusive Pre-Sale. Start your Otium Adventure with one out of the three limited time offers."
         />
-        <meta name="description" content="Official Otium Founder Chest minting page"/>
+        <meta name="description"
+              content="Join the exclusive Pre-Sale. Start your Otium Adventure with one out of the three limited time offers."/>
 
         <meta
           property="og:image"
@@ -41,7 +42,7 @@ export default function App({Component, pageProps}: AppProps) {
         />
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <title>{headerText}</title>
-        <link rel="icon" href="/collection.png"/>
+        <link rel="icon" href="/otium.png"/>
       </Head>
       <ChakraProvider value={defaultSystem}>
         <WalletProvider wallets={wallets}>
