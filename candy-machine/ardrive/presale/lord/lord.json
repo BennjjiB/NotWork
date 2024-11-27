@@ -4,8 +4,7 @@
   "description": "A chest filled with powerful items to begin your Otium adventure as a lord.",
   "seller_fee_basis_points": 500,
   "external_url": "https://playotium.com",
-  "image": "https://ysmou6qucgeapgz4sne4wk2swrp46g2p3avjv4zxyxa6lbegplbq.arweave.net/xJjqehQRiAebPJNJyytStF_PG0_YKprzN8XB5YSGesM",
-  "animation_url": "https://jpnehr5wll6e5p7s2mvsptmcfmoenzz6xrqyh5v534axblow4pzq.arweave.net/S9pDx7Za_E6_8tMrJ82CKxxG5z68YYP2vd8BcK3W4_M",
+  "image": "https://jpnehr5wll6e5p7s2mvsptmcfmoenzz6xrqyh5v534axblow4pzq.arweave.net/S9pDx7Za_E6_8tMrJ82CKxxG5z68YYP2vd8BcK3W4_M",
   "properties": {
     "files": [
       {
@@ -17,7 +16,7 @@
         "type": "image/gif"
       }
     ],
-    "category": "video"
+    "category": "image"
   },
   "attributes": [
     {
@@ -44,5 +43,9 @@
       "trait_type": "Version",
       "value": "0"
     }
-  ]
+  ],
+  "collection": {
+    "verified": 1,
+    "key": "AfgLivczGEy9em6SUXLTy47Teq2aUG9rDnePrPgNmKme"
+  }
 }

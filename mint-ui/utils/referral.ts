@@ -25,5 +25,8 @@ export async function registerReferralUsage(searchParams: ReadonlyURLSearchParam
 }
 
 export function createReferralLink(publicAddress: string): string {
+  if (publicAddress == "11111111111111111111111111111111") {
+    return ""
+  }
   return "https://otium-mint.vercel.app" + "?friendCode=" + publicAddress
 }

@@ -1,17 +1,3 @@
-.wallet {
-    position: fixed;
-    top: 2rem;
-    right: 2rem;
-}
-
-@media (max-width: 50em) {
-    .wallet {
-        position: inherit;
-        margin-left: calc(100% - 200px);
-        margin-top: 3rem;
-    }
-}
-
 .content {
     display: flex;
     flex-direction: column;

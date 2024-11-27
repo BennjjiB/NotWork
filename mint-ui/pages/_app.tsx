@@ -10,6 +10,7 @@ import {ChakraProvider, defaultSystem} from '@chakra-ui/react'
 import {image, headerText} from 'settings'
 import {UmiProvider} from "../utils/UmiProvider"
 import {SolanaTimeProvider} from "../utils/SolanaTimeContext"
+import dynamic from "next/dynamic"
 
 export default function App({Component, pageProps}: AppProps) {
   let network = WalletAdapterNetwork.Devnet
@@ -23,6 +24,11 @@ export default function App({Component, pageProps}: AppProps) {
   const wallets = useMemo(
     () => [],
     []
+  )
+  const WalletMultiButtonDynamic = dynamic(
+    async () =>
+      (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
+    {ssr: false}
   )
   return (
     <>
@@ -49,6 +55,9 @@ export default function App({Component, pageProps}: AppProps) {
           <UmiProvider endpoint={endpoint}>
             <WalletModalProvider>
               <SolanaTimeProvider>
+                <div className={"wallet"}>
+                  <WalletMultiButtonDynamic></WalletMultiButtonDynamic>
+                </div>
                 <Component {...pageProps} />
               </SolanaTimeProvider>
             </WalletModalProvider>

@@ -17,7 +17,7 @@
     --hover-background-rgb: 42, 42, 42;
 }
 
-@media(prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
     :root {
         --accent-rgb: 3, 255, 189;
         --darker-accent-rgb: 0, 204, 150;
@@ -80,4 +80,18 @@ button.wallet-adapter-button-trigger {
 
 button.wallet-adapter-button-trigger:hover {
     background-color: rgb(var(--hover-background-rgb)) !important;
+}
+
+.wallet {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+}
+
+@media (max-width: 50em) {
+    .wallet {
+        position: inherit;
+        margin-left: calc(100% - 200px);
+        margin-top: 3rem;
+    }
 }

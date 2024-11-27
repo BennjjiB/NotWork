@@ -4,20 +4,19 @@
   "description": "A chest filled with powerful items to begin your Otium adventure as a knight.",
   "seller_fee_basis_points": 500,
   "external_url": "https://playotium.com",
-  "image": "https://drive.google.com/uc?export=view&id=1PU2N_SxUREZnLT6cGbEJCp_tQrC4r0io",
-  "animation_url": "https://drive.google.com/uc?export=download&id=1I2T3TWRikQusGst5sr7yDiCqGkQ3_yca",
+  "image": "https://wllbs7t5s6v7ecgdnwo63gh4xboktrexl752dfa525mgux6h4doq.arweave.net/stYZfn2Xq_IIw22d7Zj8uFypxJdf-6GUHddYal_H4N0",
   "properties": {
     "files": [
       {
-        "uri": "https://drive.google.com/uc?export=view&id=1PU2N_SxUREZnLT6cGbEJCp_tQrC4r0io",
+        "uri": "https://wllbs7t5s6v7ecgdnwo63gh4xboktrexl752dfa525mgux6h4doq.arweave.net/stYZfn2Xq_IIw22d7Zj8uFypxJdf-6GUHddYal_H4N0",
         "type": "image/png"
       },
       {
-        "uri": "https://drive.google.com/uc?export=download&id=1I2T3TWRikQusGst5sr7yDiCqGkQ3_yca",
-        "type": "video/mp4"
+        "uri": "https://j35svxv7o27yukbp54pyw6ybvb65tpwjtdik3isrtyr6kmfqm67a.arweave.net/Tvsq3r92v4ooL-8fi3sBqH3ZvsmY0K2iUZ4j5TCwZ74",
+        "type": "image/gif"
       }
     ],
-    "category": "video"
+    "category": "image"
   },
   "attributes": [
     {
@@ -44,5 +43,9 @@
       "trait_type": "Version",
       "value": "0"
     }
-  ]
+  ],
+  "collection": {
+    "verified": 1,
+    "key": "AfgLivczGEy9em6SUXLTy47Teq2aUG9rDnePrPgNmKme"
+  }
 }

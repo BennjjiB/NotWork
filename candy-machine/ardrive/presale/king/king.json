@@ -4,8 +4,7 @@
   "description": "A chest filled with powerful items to begin your Otium adventure as a king.",
   "seller_fee_basis_points": 500,
   "external_url": "https://playotium.com",
-  "image": "https://pwpfpd7uklttnj5657e5crwfvg6rzc6qctulpy3xlkarxlubr3xq.arweave.net/fZ5Xj_RS5zanvu_J0UbFqb0ci9AU6Lfjd1qBG66Bju8",
-  "animation_url": "https://pwpfpd7uklttnj5657e5crwfvg6rzc6qctulpy3xlkarxlubr3xq.arweave.net/fZ5Xj_RS5zanvu_J0UbFqb0ci9AU6Lfjd1qBG66Bju8",
+  "image": "https://lyx7rqtse57iqf3djvy53expol37dj6kcl7z7d635imncbq5hwzq.arweave.net/Xi_4wnInfogXY01x3ZLvcvfxp8oS_5-P2-oY0QYdPbM",
   "properties": {
     "files": [
       {
@@ -13,11 +12,11 @@
         "type": "image/png"
       },
       {
-        "uri": "https://pwpfpd7uklttnj5657e5crwfvg6rzc6qctulpy3xlkarxlubr3xq.arweave.net/fZ5Xj_RS5zanvu_J0UbFqb0ci9AU6Lfjd1qBG66Bju8",
+        "uri": "https://lyx7rqtse57iqf3djvy53expol37dj6kcl7z7d635imncbq5hwzq.arweave.net/Xi_4wnInfogXY01x3ZLvcvfxp8oS_5-P2-oY0QYdPbM",
         "type": "image/gif"
       }
     ],
-    "category": "video"
+    "category": "image"
   },
   "attributes": [
     {
@@ -48,5 +47,9 @@
       "trait_type": "Version",
       "value": "0"
     }
-  ]
+  ],
+  "collection": {
+    "verified": 1,
+    "key": "AfgLivczGEy9em6SUXLTy47Teq2aUG9rDnePrPgNmKme"
+  }
 }

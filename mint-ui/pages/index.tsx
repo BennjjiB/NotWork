@@ -51,6 +51,7 @@ import {useOpenDialogListener} from "../utils/events"
 import {ClipboardIconButton, ClipboardInput, ClipboardRoot} from "../components/ui/clipboard"
 import {InputGroup} from "../components/ui/input-group"
 import {createReferralLink} from "../utils/referral"
+import {useSearchParams} from "next/navigation"
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -222,11 +223,11 @@ export default function Home() {
   function getButtonText(name: string): string {
     switch (name) {
       case "Knight":
-        return "Mint for 0.25 Sol"
+        return "Mint for 0.125 Sol"
       case "Lord":
-        return "Mint for 0.5 Sol"
+        return "Mint for 0.25 Sol"
       case "King":
-        return "Mint for 1 Sol"
+        return "Mint for 0.55 Sol"
       default:
         return ""
     }
@@ -247,7 +248,7 @@ export default function Home() {
 
   const PageContent = () => {
     return (
-      <Flex direction="column" gap={{base: "2rem", lg: "3rem"}}>
+      <Flex direction="column" gap={{base: "1rem", lg: "1.5rem", xl: "2rem", "2xl": "3rem"}}>
         <VStack gap={{base: "0.5rem", lg: "1rem"}}>
           <Heading textAlign="center" textStyle={{base: "4xl", lg: "6xl"}} className={styles.goldEffect}>Secure your
             Founder Chest</Heading>
@@ -258,7 +259,6 @@ export default function Home() {
             items.
           </Text>
         </VStack>
-
         <HStack gap="4rem" h={"100%"}>
           <Detail></Detail>
           <MintContent></MintContent>
@@ -269,7 +269,7 @@ export default function Home() {
 
   const Detail = () => {
     return (
-      <VStack hideBelow={"lg"} h="100%" flex="0.7" gap="4px">
+      <VStack hideBelow={"lg"} h="80%" flex="0.7" gap="4px">
         <Image h="100%" aspectRatio={4 / 3} fit="contain" alt="Avatar Image" asChild>
           <NextImage src={getDetailImage(chestType)} alt={chestType}/>
         </Image>
@@ -295,7 +295,10 @@ export default function Home() {
             </For>
           </HStack>
         </VStack>
-
+        <VStack align="flex-start" gap="0.5rem" width={"100%"}>
+          <Heading>Referral link</Heading>
+          <ReferralLinkClipboard></ReferralLinkClipboard>
+        </VStack>
         <VStack align="flex-start" gap="0.5rem">
           <Heading>Chest Reward</Heading>
           <HStack flexWrap="wrap">
@@ -358,6 +361,36 @@ export default function Home() {
     )
   }
 
+  const ReferralLinkClipboard = () => {
+    return (
+      <ClipboardRoot
+        display="flex"
+        flexDirection="column"
+        alignItems={"center"}
+        width={"100%"}
+        value={createReferralLink(umi.payer.publicKey)}
+      >
+        <InputGroup
+          width="100%"
+          endElement={
+            <ClipboardIconButton
+              backgroundColor={"rgb(var(--secondary-background-rgb))"}
+              _hover={{background: "rgb(var(--tertiary-background-rgb))"}}
+              color={"white"}
+              me="2"/>
+          }
+        >
+          <ClipboardInput
+            paddingStart="0.5rem"
+            borderColor={"rgb(var(--tertiary-background-rgb))"}
+            _focus={{borderColor: "white"}}
+            className={styles.clipboard}
+          />
+        </InputGroup>
+      </ClipboardRoot>
+    )
+  }
+
   const [openDialog, setDialogOpen] = useState(false)
   useOpenDialogListener((state) => {
     setDialogOpen(state)
@@ -395,31 +428,7 @@ export default function Home() {
             </Image>
           </DialogBody>
           <DialogFooter width={"70%"}>
-            <ClipboardRoot
-              display="flex"
-              flexDirection="column"
-              alignItems={"center"}
-              width={"100%"}
-              value={createReferralLink(umi.payer.publicKey)}
-            >
-              <InputGroup
-                width="100%"
-                endElement={
-                  <ClipboardIconButton
-                    backgroundColor={"rgb(var(--secondary-background-rgb))"}
-                    _hover={{background: "rgb(var(--tertiary-background-rgb))"}}
-                    color={"white"}
-                    me="2"/>
-                }
-              >
-                <ClipboardInput
-                  paddingStart="0.5rem"
-                  borderColor={"rgb(var(--secondary-background-rgb))"}
-                  _focus={{borderColor: "white"}}
-                  className={styles.clipboard}
-                />
-              </InputGroup>
-            </ClipboardRoot>
+            <ReferralLinkClipboard></ReferralLinkClipboard>
           </DialogFooter>
           <DialogCloseTrigger color={"white"} _hover={{background: "rgb(var(--secondary-background-rgb))"}}/>
         </DialogContent>
@@ -429,10 +438,9 @@ export default function Home() {
 
   return (
     <main>
-      <div className={styles.wallet}>
-        <WalletMultiButtonDynamic></WalletMultiButtonDynamic>
-      </div>
-      {loading ? (<></>) : (
+      {loading ? (<>
+        {useSearchParams().get('referralCode')}
+      </>) : (
         <div className={styles.content}>
           <PageContent></PageContent>
           <DialogView></DialogView>

@@ -7,7 +7,7 @@
   "isSequential": true,
   "creators": [
     {
-      "address": "F3FMWiKpMec9o4kcVXXAzPdBqJVxt69zhUwPYruF47X4",
+      "address": "D3f77scLAWG2dMBuNQjoeV2A4jVYpQMwTJdEC63df89W",
       "share": 100
     }
   ],
@@ -19,16 +19,19 @@
   "shdwStorageAccount": null,
   "pinataConfig": null,
   "hiddenSettings": {
-    "name": "Knight's Chest ",
-    "uri": "https://drive.google.com/uc?export=download&id=1_pwmHuqWCzutu2jGjkX8lHkq7R1S1rZf",
-    "hash": "ENpH5RiruXfnJ3aBtRatsCeu5NSphqaz"
+    "name": "Lord's Chest ",
+    "uri": "https://cevir7hvowceybnl6rnl63vvkzyg6dcunrgqm5ve6tokzsbfl3sq.arweave.net/ESqI_PV1hEwFq_Rav261VnBvDFRsTQZ2pPTcrMglXuU",
+    "hash": "3pPkrKm4TcKtTbkP7qMEmoqov4H6jekA"
   },
   "guards": {
     "default": {
-      "botTax": null,
+      "botTax": {
+        "value": 0.01,
+        "lastInstruction": true
+      },
       "solPayment": {
-        "value": 0.5,
-        "destination": "F3FMWiKpMec9o4kcVXXAzPdBqJVxt69zhUwPYruF47X4"
+        "value": 0.25,
+        "destination": "D3f77scLAWG2dMBuNQjoeV2A4jVYpQMwTJdEC63df89W"
       },
       "tokenPayment": null,
       "startDate": null,
