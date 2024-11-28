@@ -7,13 +7,13 @@ import raffle_title_image from 'public/RaffleTitle.png'
 import prices from 'public/RafflePrices.png'
 import ticket from 'public/RaffleTicket.png'
 import buttonImage from 'public/RaffleBuyBotton.png'
-import {Slider} from "../components/ui/slider"
 import styles from "../styles/Home.module.css"
 import 'react-toastify/dist/ReactToastify.css'
 import {DialogBody, DialogCloseTrigger, DialogContent, DialogHeader, DialogRoot} from "../components/ui/dialog"
 import {toast, ToastContainer} from "react-toastify"
 import {publicKey, transactionBuilder, Umi} from "@metaplex-foundation/umi"
 import {findAssociatedTokenPda, safeFetchMint, safeFetchToken, transferTokens} from "@metaplex-foundation/mpl-toolbox"
+import {Slider} from "../components/ui/slider"
 
 const RETRIEVER_WALLET_ADDRESS = publicKey('BT3H4W35yxnthWzpG332iME7NFgeyAJWJ1HvXr1252Zw') // Notwork receiver wallet address
 const SOLANA_NOTWORK_TOKEN = publicKey('GcdLTfPGhdsX6zVjmcLchwwECzYqATHgk64sKZuadHKF') // Notwork token address
@@ -145,6 +145,7 @@ export default function Raffle() {
       <VStack gap={"0rem"}>
         <Image
           onClick={async () => {
+            setTicketsBought(props.notworkAmount / 1000)
             await buyTickets(props.notworkAmount)
           }}
           w="100%"
@@ -278,6 +279,7 @@ export default function Raffle() {
     )
   }
 
+  const [ticketsBought, setTicketsBought] = useState(0)
   const [openDialog, setDialogOpen] = useState(false)
   const DialogView = () => {
     return (
@@ -303,7 +305,7 @@ export default function Raffle() {
               Congratulations you&apos;ve obtained!
             </Heading>
             <Heading textAlign="center" textStyle={{base: "3xl", lg: "4xl"}}>
-              50 Tickets
+              {ticketsBought} Tickets
             </Heading>
           </DialogHeader>
           <DialogBody w="90%">
