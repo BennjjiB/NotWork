@@ -15,7 +15,7 @@ import {publicKey, transactionBuilder, Umi} from "@metaplex-foundation/umi"
 import {findAssociatedTokenPda, safeFetchMint, safeFetchToken, transferTokens} from "@metaplex-foundation/mpl-toolbox"
 import {Slider} from "../components/ui/slider"
 
-const RETRIEVER_WALLET_ADDRESS = publicKey('BT3H4W35yxnthWzpG332iME7NFgeyAJWJ1HvXr1252Zw') // Notwork receiver wallet address
+const RETRIEVER_WALLET_ADDRESS = publicKey('D3f77scLAWG2dMBuNQjoeV2A4jVYpQMwTJdEC63df89W') // Notwork receiver wallet address
 const SOLANA_NOTWORK_TOKEN = publicKey('GcdLTfPGhdsX6zVjmcLchwwECzYqATHgk64sKZuadHKF') // Notwork token address
 const SOLANA_NOTWORK_TOKEN_DECIMAL = BigInt(10 ** 9)
 
