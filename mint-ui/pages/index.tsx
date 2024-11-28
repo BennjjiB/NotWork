@@ -250,10 +250,11 @@ export default function Home() {
 
   const PageContent = () => {
     return (
-      <Flex direction="column" gap={{base: "1rem", lg: "1.5rem", xl: "2rem", "2xl": "3rem"}}>
-        <VStack gap={{base: "0.5rem", lg: "1rem"}}>
-          <Heading textAlign="center" textStyle={{base: "4xl", lg: "6xl"}} className={styles.goldEffect}>Secure your
-            Founder Chest</Heading>
+      <Flex direction="column" gap={{base: "1rem", xl: "1.5rem", "2xl": "3rem"}}>
+        <VStack gap={{base: "0.5rem", "2xl": "1rem"}}>
+          <Heading textAlign="center" textStyle={{base: "4xl", md: "5xl", "2xl": "6xl"}} className={styles.goldEffect}>
+            Secure your Founder Chest
+          </Heading>
           <Text textAlign="center">
             Prepare to immerse yourself in the thrilling world of Otium with our exclusive presale!
             For a limited time you have the chance to purchase three unique tiers of chests, each brimming with
@@ -284,8 +285,8 @@ export default function Home() {
     const [amount, setAmount] = useState("1")
     return (
       <Flex direction="column" align="flex-start" gap={{base: "1rem"}} flex="1" h="100%">
-        <VStack align="flex-start" gap="0.5rem">
-          <Heading>Select your chest</Heading>
+        <VStack align="flex-start" gap={{base: "0.2rem", "2xl": "1rem"}}>
+          <Heading textStyle={{base: "lg", "2xl": "2xl"}}>Select your chest</Heading>
           <HStack gap="2rem">
             <For each={[
               {name: "Knight", image: knight_chest_image},
@@ -299,11 +300,11 @@ export default function Home() {
           </HStack>
         </VStack>
         <VStack align="flex-start" gap="0.5rem" width={"100%"}>
-          <Heading>Referral link</Heading>
+          <Heading textStyle={{base: "lg", "2xl": "2xl"}}>Referral link</Heading>
           <ReferralLinkClipboard></ReferralLinkClipboard>
         </VStack>
         <VStack align="flex-start" gap="0.5rem">
-          <Heading>Chest Reward</Heading>
+          <Heading textStyle={{base: "lg", "2xl": "2xl"}}>Chest Reward</Heading>
           <HStack flexWrap="wrap">
             <For
               each={getAttributes(chestType)}>
@@ -317,7 +318,7 @@ export default function Home() {
         </VStack>
 
         <VStack align="flex-start" gap="0.5rem">
-          <Heading>Amount</Heading>
+          <Heading textStyle={{base: "lg", "2xl": "2xl"}}>Amount</Heading>
           <StepperInput color="white" min={1} value={amount} onValueChange={(details: any) => {
             setAmount(details.value)
           }}/>

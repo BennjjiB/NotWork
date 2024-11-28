@@ -90,19 +90,15 @@ async function getLeaderboard(address: string) {
 
 export default function Raffle() {
   const umi = useUmi()
-  const [
-    notworkBalance, setNotworkBalance] = useState<number>(0) // Ensure it's typed as a number
+  const [notworkBalance, setNotworkBalance] = useState<number>(0) // Ensure it's typed as a number
   const [loading, setLoading] = useState<boolean>(false) // Ensure it's typed as a number
 
   useEffect(() => {
     (async () => {
       if (!umi) return
       setNotworkBalance(await fetchTokenBalance(umi) ?? 0)
-      if (notworkBalance == 0) {
-        setNotworkBalance(await fetchTokenBalance(umi) ?? 0)
-      }
     })()
-  }, [umi, notworkBalance])
+  }, [umi])
 
   const error = umi.payer.publicKey == "11111111111111111111111111111111" || notworkBalance == 0
 
@@ -174,33 +170,6 @@ export default function Raffle() {
       </VStack>
     )
   }
-
-  const [counter, setCounter] = React.useState("")
-
-  useEffect(() => {
-    let countDownDate = new Date("Dec 14, 2024 00:00:00").getTime()
-    let now = new Date().getTime()
-    let distance = countDownDate - now
-    while (distance < 0) {
-      countDownDate += 6.048e+8
-      distance = countDownDate - now
-    }
-    let x = setInterval(function () {
-      let now = new Date().getTime()
-      let distance = countDownDate - now
-      let days = Math.floor(distance / (1000 * 60 * 60 * 24))
-      let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-      let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
-      let seconds = Math.floor((distance % (1000 * 60)) / 1000)
-
-      setCounter(days + " Days " + hours + " Hours " + minutes + " Minutes " + seconds + " Seconds ")
-
-      if (distance < 0) {
-        clearInterval(x)
-        countDownDate += 6.048e+8
-      }
-    }, 1000)
-  }, [])
 
   interface TicketIndicatorProps {
     tickets: number
@@ -346,20 +315,53 @@ export default function Raffle() {
     )
   }
 
+  const CountDown = () => {
+    const [counter, setCounter] = React.useState("")
+
+    useEffect(() => {
+      let countDownDate = new Date("Dec 14, 2024 00:00:00").getTime()
+      let now = new Date().getTime()
+      let distance = countDownDate - now
+      while (distance < 0) {
+        countDownDate += 6.048e+8
+        distance = countDownDate - now
+      }
+      let x = setInterval(function () {
+        let now = new Date().getTime()
+        let distance = countDownDate - now
+        let days = Math.floor(distance / (1000 * 60 * 60 * 24))
+        let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+        let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
+        let seconds = Math.floor((distance % (1000 * 60)) / 1000)
+
+        setCounter(days + " Days " + hours + " Hours " + minutes + " Minutes " + seconds + " Seconds ")
+
+        if (distance < 0) {
+          clearInterval(x)
+          countDownDate += 6.048e+8
+        }
+      }, 1000)
+    }, [])
+
+    return (
+      <Heading
+        textStyle={{base: "lg", xl: "3xl"}}
+        marginTop="-2.5rem"
+        textAlign={"center"}
+        className={styles.goldEffect}
+      >
+        Raffle ends in {counter}
+      </Heading>
+    )
+  }
+
   return (
     <div className={styles.content}>
       <VStack>
         <Image marginTop="1rem" h={{base: "8rem", xl: "12rem"}} fit="contain" alt="Title Image" asChild>
           <NextImage src={raffle_title_image} alt={"Referral link image"}/>
         </Image>
-        <Heading
-          textStyle={{base: "lg", xl: "3xl"}}
-          marginTop="-2.5rem"
-          textAlign={"center"}
-          className={styles.goldEffect}
-        >
-          Raffle ends in {counter}
-        </Heading>
+        <CountDown></CountDown>
         <VStack w="100%" gap={"4rem"}>
           <Stack direction={{base: "column", md: "row"}} w="80%" alignItems={"center"} gap={"4rem"}>
             <Image w={{base: "80%", md: "60%"}} fit="contain" alt="Title Image" asChild>
