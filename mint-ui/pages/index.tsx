@@ -232,7 +232,7 @@ export default function Home() {
   }
 
   function getButtonText(name: string, amount: string): string {
-    return "Mint for " + getPrice(name, amount).toFixed(2) + "Sol"
+    return "Mint for " + getPrice(name, amount).toFixed(3) + "Sol"
   }
 
   function getDetailImage(name: string): StaticImageData {
