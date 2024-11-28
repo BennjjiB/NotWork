@@ -12,6 +12,16 @@ import buttonImage from 'public/RaffleBuyBotton.png'
 import {Slider} from "../components/ui/slider"
 import {Table} from "@chakra-ui/react"
 import styles from "../styles/Home.module.css"
+import {useOpenDialogListener} from "../utils/events"
+import {
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogRoot
+} from "../components/ui/dialog"
+import referral_image from "../public/referral_image.png"
 
 export default function Raffle() {
   const umi = useUmi()
@@ -154,28 +164,103 @@ export default function Raffle() {
   }
 
 
-  return (
-    <VStack>
-      <Image marginTop="1rem" h={{base: "8rem", xl: "12rem"}} fit="contain" alt="Title Image" asChild>
-        <NextImage src={raffle_title_image} alt={"Referral link image"}/>
+  const RotatingTicket = () => {
+    const [MousePosition, setMousePosition] = useState({
+      left: 0,
+      top: 0
+    })
+
+    function handleMouseMove(ev: React.MouseEvent) {
+      const x = ev.clientX
+      const y = ev.clientY
+
+      const middleX = window.innerWidth / 2
+      const middleY = window.innerHeight / 2
+
+      const offsetX = (x - middleX) / middleX * 200
+      const offsetY = (y - middleY) / middleY * 100
+      document.documentElement.style.setProperty('--rotateX', (-1 * offsetY).toString() + "deg")
+      document.documentElement.style.setProperty('--rotateY', offsetX.toString() + "deg")
+    }
+
+    function handleMouseOut(ev: React.MouseEvent) {
+      document.documentElement.style.setProperty('--rotateX', "30deg")
+      document.documentElement.style.setProperty('--rotateY', "-20deg")
+    }
+
+    return (
+      <Image
+        onMouseMove={handleMouseMove}
+        onMouseOut={handleMouseOut}
+        className={styles.flip}
+        margin="-4rem 0"
+        borderRadius="12px"
+        w="100%" h="400px" fit="contain"
+        alt="Avatar Image" asChild>
+        <NextImage src={ticket} alt={"Referral link image"}/>
       </Image>
-      <Heading
-        textStyle={{base: "lg", xl: "3xl"}}
-        marginTop="-2.5rem"
-        textAlign={"center"}
-        className={styles.goldEffect}
+    )
+  }
+
+  const [openDialog, setDialogOpen] = useState(true)
+  const DialogView = () => {
+    return (
+      <DialogRoot
+        lazyMount
+        open={openDialog}
+        onOpenChange={(e) => {
+          if (!e.open) {
+            setDialogOpen(e.open)
+          }
+        }}
+        placement={"center"}
+        motionPreset="slide-in-bottom"
+        size={"lg"}
       >
-        Raffle ends in {new Date().toString()}
-      </Heading>
-      <VStack w="100%" gap={"4rem"}>
-        <Stack direction={{base: "column", md: "row"}} w="80%" alignItems={"center"} gap={"4rem"}>
-          <Image w={{base: "80%", md: "60%"}} fit="contain" alt="Title Image" asChild>
-            <NextImage src={prices} alt={"Referral link image"}/>
-          </Image>
-          <BuySection></BuySection>
-        </Stack>
-        <LeaderBoard></LeaderBoard>
+        <DialogContent p="1rem" alignItems={"center"} gap={"1rem"} backgroundColor={"rgb(var(--background-rgb))"}>
+          <DialogHeader display="flex" flexDirection="column" gap="0.5rem" alignItems={"center"}>
+            <Heading textAlign="center" textStyle={{base: "2xl", lg: "3xl"}}
+                     className={styles.goldEffect}>
+              Congratulations you've obtained!
+            </Heading>
+            <Heading textAlign="center" textStyle={{base: "3xl", lg: "4xl"}}>
+              50 Tickets
+            </Heading>
+          </DialogHeader>
+          <DialogBody w="90%">
+            <RotatingTicket></RotatingTicket>
+          </DialogBody>
+          <DialogCloseTrigger color={"white"} _hover={{background: "rgb(var(--secondary-background-rgb))"}}/>
+        </DialogContent>
+      </DialogRoot>
+    )
+  }
+
+  return (
+    <div>
+      <VStack>
+        <Image marginTop="1rem" h={{base: "8rem", xl: "12rem"}} fit="contain" alt="Title Image" asChild>
+          <NextImage src={raffle_title_image} alt={"Referral link image"}/>
+        </Image>
+        <Heading
+          textStyle={{base: "lg", xl: "3xl"}}
+          marginTop="-2.5rem"
+          textAlign={"center"}
+          className={styles.goldEffect}
+        >
+          Raffle ends in {new Date().toString()}
+        </Heading>
+        <VStack w="100%" gap={"4rem"}>
+          <Stack direction={{base: "column", md: "row"}} w="80%" alignItems={"center"} gap={"4rem"}>
+            <Image w={{base: "80%", md: "60%"}} fit="contain" alt="Title Image" asChild>
+              <NextImage src={prices} alt={"Referral link image"}/>
+            </Image>
+            <BuySection></BuySection>
+          </Stack>
+          <LeaderBoard></LeaderBoard>
+        </VStack>
       </VStack>
-    </VStack>
+      <DialogView></DialogView>
+    </div>
   )
 }
