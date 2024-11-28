@@ -90,7 +90,8 @@ async function getLeaderboard(address: string) {
 
 export default function Raffle() {
   const umi = useUmi()
-  const [notworkBalance, setNotworkBalance] = useState<number>(0) // Ensure it's typed as a number
+  const [
+    notworkBalance, setNotworkBalance] = useState<number>(0) // Ensure it's typed as a number
   const [loading, setLoading] = useState<boolean>(false) // Ensure it's typed as a number
 
   useEffect(() => {
@@ -101,7 +102,7 @@ export default function Raffle() {
         setNotworkBalance(await fetchTokenBalance(umi) ?? 0)
       }
     })()
-  }, [umi])
+  }, [umi, notworkBalance])
 
   const error = umi.payer.publicKey == "11111111111111111111111111111111" || notworkBalance == 0
 

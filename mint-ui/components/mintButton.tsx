@@ -308,6 +308,15 @@ export function MintButton({
                            }: Props): JSX.Element {
   const searchParams = useSearchParams()
 
+  useEffect(() => {
+    (async () => {
+      if (!umi) return
+      const solAmount = await umi.rpc.getBalance(umi.payer.publicKey)
+      setSol(amountToNumber(solAmount))
+    })()
+  }, [umi])
+  const [sol, setSol] = useState<number | null>(null)
+
   // remove duplicates from guardList
   //fucked up bugfix
   let filteredGuardlist = guardList.filter(
@@ -349,16 +358,6 @@ export function MintButton({
     }
     buttonGuardList.push(buttonElement)
   }
-
-
-  useEffect(() => {
-    (async () => {
-      if (!umi) return
-      const solAmount = await umi.rpc.getBalance(umi.payer.publicKey)
-      setSol(amountToNumber(solAmount))
-    })()
-  }, [umi])
-  const [sol, setSol] = useState<number | null>(null)
 
   const listItems = buttonGuardList.map((buttonGuard, index) => (
     <VStack w={"100%"} alignItems={"start"} key={index}>
