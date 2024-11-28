@@ -17,16 +17,15 @@ export async function registerReferralUsage(searchParams: ReadonlyURLSearchParam
     body: JSON.stringify({
       code: code,
       chestType: chestType,
-      noOfChests: noOfChests
+      noOfChests: noOfChests,
+      date: Date.now()
     }),
   })
-  const result = await response.json()
-  console.log(result)
 }
 
 export function createReferralLink(publicAddress: string): string {
   if (publicAddress == "11111111111111111111111111111111") {
     return ""
   }
-  return "https://otium-mint.vercel.app" + "?friendCode=" + publicAddress
+  return "https://www.mint.playotium.com" + "?friendCode=" + publicAddress
 }

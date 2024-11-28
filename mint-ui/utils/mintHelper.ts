@@ -1,4 +1,4 @@
-import {allowLists} from "../allowlist";
+import {allowLists} from "../allowlist"
 import {
   CandyGuard,
   CandyMachine,
@@ -10,11 +10,11 @@ import {
   getMerkleProof,
   safeFetchAllowListProofFromSeeds,
   mintV2,
-} from "@metaplex-foundation/mpl-candy-machine";
+} from "@metaplex-foundation/mpl-candy-machine"
 import {
   DigitalAssetWithToken,
   TokenStandard,
-} from "@metaplex-foundation/mpl-token-metadata";
+} from "@metaplex-foundation/mpl-token-metadata"
 import {
   some,
   Umi,
@@ -27,15 +27,15 @@ import {
   Signer,
   sol,
   BlockhashWithExpiryBlockHeight,
-} from "@metaplex-foundation/umi";
-import {GuardReturn} from "./checkerHelper";
-import {Connection} from "@solana/web3.js";
+} from "@metaplex-foundation/umi"
+import {GuardReturn} from "./checkerHelper"
+import {Connection} from "@solana/web3.js"
 import {
   setComputeUnitPrice,
   setComputeUnitLimit,
   transferSol,
-} from "@metaplex-foundation/mpl-toolbox";
-import {toWeb3JsTransaction} from "@metaplex-foundation/umi-web3js-adapters";
+} from "@metaplex-foundation/mpl-toolbox"
+import {toWeb3JsTransaction} from "@metaplex-foundation/umi-web3js-adapters"
 
 export interface GuardButtonList extends GuardReturn {
   startTime: bigint;
@@ -49,54 +49,54 @@ export const chooseGuardToUse = (
 ) => {
   let guardGroup = candyGuard?.groups.find(
     (item) => item.label === guard.label
-  );
+  )
   if (guardGroup) {
-    return guardGroup;
+    return guardGroup
   }
 
   if (candyGuard != null) {
     return {
       label: "default",
       guards: candyGuard.guards,
-    };
+    }
   }
 
-  console.error("No guards defined! No minting possible.");
+  console.error("No guards defined! No minting possible.")
   return {
     label: "default",
     guards: undefined,
-  };
-};
+  }
+}
 
 export const mintArgsBuilder = (
   candyMachine: CandyMachine,
   guardToUse: GuardGroup<DefaultGuardSet>,
   ownedTokens: DigitalAssetWithToken[]
 ) => {
-  const guards = guardToUse.guards;
-  let ruleset = undefined;
+  const guards = guardToUse.guards
+  let ruleset = undefined
   if (candyMachine.ruleSet.__option === "Some") {
-    ruleset = candyMachine.ruleSet.value;
+    ruleset = candyMachine.ruleSet.value
   }
 
-  let mintArgs: Partial<DefaultGuardSetMintArgs> = {};
+  let mintArgs: Partial<DefaultGuardSetMintArgs> = {}
   if (guards.allocation.__option === "Some") {
-    mintArgs.allocation = some({id: guards.allocation.value.id});
+    mintArgs.allocation = some({id: guards.allocation.value.id})
   }
 
   if (guards.allowList.__option === "Some") {
-    const allowlist = allowLists.get(guardToUse.label);
+    const allowlist = allowLists.get(guardToUse.label)
     if (!allowlist) {
-      console.error(`allowlist for guard ${guardToUse.label} not found!`);
+      console.error(`allowlist for guard ${guardToUse.label} not found!`)
     } else {
-      mintArgs.allowList = some({merkleRoot: getMerkleRoot(allowlist)});
+      mintArgs.allowList = some({merkleRoot: getMerkleRoot(allowlist)})
     }
   }
 
   if (guards.freezeSolPayment.__option === "Some") {
     mintArgs.freezeSolPayment = some({
       destination: guards.freezeSolPayment.value.destination,
-    });
+    })
   }
 
   if (guards.freezeTokenPayment.__option === "Some") {
@@ -104,44 +104,44 @@ export const mintArgsBuilder = (
       destinationAta: guards.freezeTokenPayment.value.destinationAta,
       mint: guards.freezeTokenPayment.value.mint,
       nftRuleSet: ruleset,
-    });
+    })
   }
 
   if (guards.gatekeeper.__option === "Some") {
     mintArgs.gatekeeper = some({
       expireOnUse: guards.gatekeeper.value.expireOnUse,
       gatekeeperNetwork: guards.gatekeeper.value.gatekeeperNetwork,
-    });
+    })
   }
 
   if (guards.mintLimit.__option === "Some") {
-    mintArgs.mintLimit = some({id: guards.mintLimit.value.id});
+    mintArgs.mintLimit = some({id: guards.mintLimit.value.id})
   }
 
   if (guards.nftBurn.__option === "Some") {
-    const requiredCollection = guards.nftBurn.value.requiredCollection;
+    const requiredCollection = guards.nftBurn.value.requiredCollection
     //TODO: have the use choose the NFT
     const nft = ownedTokens.find(
       (el) =>
         el.metadata.collection.__option === "Some" &&
         el.metadata.collection.value.key === requiredCollection
-    );
+    )
     if (!nft) {
-      console.error("no nft to burn found!");
+      console.error("no nft to burn found!")
     } else {
-      let tokenStandard = TokenStandard.NonFungible;
-      let ruleSet = undefined;
+      let tokenStandard = TokenStandard.NonFungible
+      let ruleSet = undefined
       if (nft.metadata.tokenStandard.__option === "Some") {
         if (
           nft.metadata.tokenStandard.value ===
           TokenStandard.ProgrammableNonFungible
         ) {
-          tokenStandard = TokenStandard.ProgrammableNonFungible;
+          tokenStandard = TokenStandard.ProgrammableNonFungible
           if (
             nft.metadata.programmableConfig.__option === "Some" &&
             nft.metadata.programmableConfig.value.ruleSet.__option === "Some"
           ) {
-            ruleSet = nft.metadata.programmableConfig.value.ruleSet.value;
+            ruleSet = nft.metadata.programmableConfig.value.ruleSet.value
           }
         }
       }
@@ -150,33 +150,33 @@ export const mintArgsBuilder = (
         requiredCollection,
         tokenStandard,
         ruleSet,
-      });
+      })
     }
   }
 
   if (guards.nftGate.__option === "Some") {
-    const requiredCollection = guards.nftGate.value.requiredCollection;
+    const requiredCollection = guards.nftGate.value.requiredCollection
     const nft = ownedTokens.find(
       (el) =>
         el.metadata.collection.__option === "Some" &&
         el.metadata.collection.value.key === requiredCollection
-    );
+    )
     if (!nft) {
-      console.error("no nft for tokenGate found!");
+      console.error("no nft for tokenGate found!")
     } else {
-      let tokenStandard = TokenStandard.NonFungible;
-      let ruleSet = undefined;
+      let tokenStandard = TokenStandard.NonFungible
+      let ruleSet = undefined
       if (nft.metadata.tokenStandard.__option === "Some") {
         if (
           nft.metadata.tokenStandard.value ===
           TokenStandard.ProgrammableNonFungible
         ) {
-          tokenStandard = TokenStandard.ProgrammableNonFungible;
+          tokenStandard = TokenStandard.ProgrammableNonFungible
           if (
             nft.metadata.programmableConfig.__option === "Some" &&
             nft.metadata.programmableConfig.value.ruleSet.__option === "Some"
           ) {
-            ruleSet = nft.metadata.programmableConfig.value.ruleSet.value;
+            ruleSet = nft.metadata.programmableConfig.value.ruleSet.value
           }
         }
       }
@@ -185,33 +185,33 @@ export const mintArgsBuilder = (
         requiredCollection,
         tokenStandard,
         ruleSet,
-      });
+      })
     }
   }
 
   if (guards.nftPayment.__option === "Some") {
-    const requiredCollection = guards.nftPayment.value.requiredCollection;
+    const requiredCollection = guards.nftPayment.value.requiredCollection
     const nft = ownedTokens.find(
       (el) =>
         el.metadata.collection.__option === "Some" &&
         el.metadata.collection.value.key === requiredCollection
-    );
+    )
     if (!nft) {
-      console.error("no nft for tokenGate found!");
+      console.error("no nft for tokenGate found!")
     } else {
-      let tokenStandard = TokenStandard.NonFungible;
-      let ruleSet = undefined;
+      let tokenStandard = TokenStandard.NonFungible
+      let ruleSet = undefined
       if (nft.metadata.tokenStandard.__option === "Some") {
         if (
           nft.metadata.tokenStandard.value ===
           TokenStandard.ProgrammableNonFungible
         ) {
-          tokenStandard = TokenStandard.ProgrammableNonFungible;
+          tokenStandard = TokenStandard.ProgrammableNonFungible
           if (
             nft.metadata.programmableConfig.__option === "Some" &&
             nft.metadata.programmableConfig.value.ruleSet.__option === "Some"
           ) {
-            ruleSet = nft.metadata.programmableConfig.value.ruleSet.value;
+            ruleSet = nft.metadata.programmableConfig.value.ruleSet.value
           }
         }
       }
@@ -221,43 +221,43 @@ export const mintArgsBuilder = (
         requiredCollection,
         tokenStandard,
         ruleSet,
-      });
+      })
     }
   }
 
   if (guards.solPayment.__option === "Some") {
     mintArgs.solPayment = some({
       destination: guards.solPayment.value.destination,
-    });
+    })
   }
 
   if (guards.thirdPartySigner.__option === "Some") {
-    console.error("not supported. you need a backend");
+    console.error("not supported. you need a backend")
   }
 
   if (guards.token2022Payment.__option === "Some") {
     mintArgs.token2022Payment = some({
       destinationAta: guards.token2022Payment.value.destinationAta,
       mint: guards.token2022Payment.value.mint,
-    });
+    })
   }
 
   if (guards.tokenBurn.__option === "Some") {
-    mintArgs.tokenBurn = some({mint: guards.tokenBurn.value.mint});
+    mintArgs.tokenBurn = some({mint: guards.tokenBurn.value.mint})
   }
 
   if (guards.tokenGate.__option === "Some") {
-    mintArgs.tokenGate = some({mint: guards.tokenGate.value.mint});
+    mintArgs.tokenGate = some({mint: guards.tokenGate.value.mint})
   }
 
   if (guards.tokenPayment.__option === "Some") {
     mintArgs.tokenPayment = some({
       destinationAta: guards.tokenPayment.value.destinationAta,
       mint: guards.tokenPayment.value.mint,
-    });
+    })
   }
-  return mintArgs;
-};
+  return mintArgs
+}
 
 // build route instruction for allowlist guard
 export const routeBuilder = async (
@@ -265,23 +265,21 @@ export const routeBuilder = async (
   guardToUse: GuardGroup<DefaultGuardSet>,
   candyMachine: CandyMachine
 ) => {
-  let tx2 = transactionBuilder();
+  let tx2 = transactionBuilder()
 
   if (guardToUse.guards.allowList.__option === "Some") {
-    const allowlist = allowLists.get(guardToUse.label);
+    const allowlist = allowLists.get(guardToUse.label)
     if (!allowlist) {
-      console.error("allowlist not found!");
-      return tx2;
+      console.error("allowlist not found!")
+      return tx2
     }
     const allowListProof = await safeFetchAllowListProofFromSeeds(umi, {
       candyGuard: candyMachine.mintAuthority,
       candyMachine: candyMachine.publicKey,
       merkleRoot: getMerkleRoot(allowlist),
       user: publicKey(umi.identity),
-    });
-    console.log("allowListProof", allowListProof)
+    })
     if (allowListProof === null) {
-      console.log("null")
       tx2 = tx2.add(
         route(umi, {
           guard: "allowList",
@@ -295,11 +293,11 @@ export const routeBuilder = async (
             merkleProof: getMerkleProof(allowlist, publicKey(umi.identity)),
           },
         })
-      );
+      )
     }
-    return tx2;
+    return tx2
   }
-};
+}
 
 // combine transactions. return TransactionBuilder[]
 export const combineTransactions = (
@@ -307,27 +305,27 @@ export const combineTransactions = (
   txs: TransactionBuilder[],
   tables: AddressLookupTableInput[]
 ) => {
-  const returnArray: TransactionBuilder[] = [];
-  let builder = transactionBuilder();
+  const returnArray: TransactionBuilder[] = []
+  let builder = transactionBuilder()
 
   // combine as many transactions as possible into one
   for (let i = 0; i <= txs.length - 1; i++) {
-    const tx = txs[i];
-    let oldBuilder = builder;
-    builder = builder.add(tx);
+    const tx = txs[i]
+    let oldBuilder = builder
+    builder = builder.add(tx)
 
     if (!builder.fitsInOneTransaction(umi)) {
-      oldBuilder = oldBuilder.setAddressLookupTables(tables);
-      returnArray.push(oldBuilder);
-      builder = new TransactionBuilder();
-      builder = builder.add(tx);
+      oldBuilder = oldBuilder.setAddressLookupTables(tables)
+      returnArray.push(oldBuilder)
+      builder = new TransactionBuilder()
+      builder = builder.add(tx)
     }
     if (i === txs.length - 1) {
-      returnArray.push(builder);
+      returnArray.push(builder)
     }
   }
-  return returnArray;
-};
+  return returnArray
+}
 
 export const buildTx = (
   umi: Umi,
@@ -357,7 +355,7 @@ export const buildTx = (
       mintArgs,
       tokenStandard: candyMachine.tokenStandard,
     })
-  );
+  )
   if (buyBeer) {
     tx = tx.prepend(
       transferSol(umi, {
@@ -366,26 +364,26 @@ export const buildTx = (
         ),
         amount: sol(Number(0.005)),
       })
-    );
+    )
   }
-  tx = tx.prepend(setComputeUnitLimit(umi, {units}));
-  tx = tx.prepend(setComputeUnitPrice(umi, {microLamports: parseInt(process.env.NEXT_PUBLIC_MICROLAMPORTS ?? "1001")}));
-  tx = tx.setAddressLookupTables(luts);
-  tx = tx.setBlockhash(latestBlockhash);
-  return tx.build(umi);
-};
+  tx = tx.prepend(setComputeUnitLimit(umi, {units}))
+  tx = tx.prepend(setComputeUnitPrice(umi, {microLamports: parseInt(process.env.NEXT_PUBLIC_MICROLAMPORTS ?? "1001")}))
+  tx = tx.setAddressLookupTables(luts)
+  tx = tx.setBlockhash(latestBlockhash)
+  return tx.build(umi)
+}
 
 // simulate CU based on Sammys gist https://gist.github.com/stegaBOB/7c0cdc916db4524dd9c285f9e4309475
 export const getRequiredCU = async (umi: Umi, transaction: Transaction) => {
-  const defaultCU = 800_000;
-  const web3tx = toWeb3JsTransaction(transaction);
-  let connection = new Connection(umi.rpc.getEndpoint(), "finalized");
+  const defaultCU = 800_000
+  const web3tx = toWeb3JsTransaction(transaction)
+  let connection = new Connection(umi.rpc.getEndpoint(), "finalized")
   const simulatedTx = await connection.simulateTransaction(web3tx, {
     replaceRecentBlockhash: true,
     sigVerify: false,
-  });
+  })
   if (simulatedTx.value.err || !simulatedTx.value.unitsConsumed) {
-    return defaultCU;
+    return defaultCU
   }
-  return simulatedTx.value.unitsConsumed * 1.2 || defaultCU;
+  return simulatedTx.value.unitsConsumed * 1.2 || defaultCU
 }

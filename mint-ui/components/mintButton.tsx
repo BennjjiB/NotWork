@@ -11,7 +11,7 @@ import {
   createBigInt,
   generateSigner,
   publicKey,
-  signAllTransactions,
+  signAllTransactions, amountToNumber,
 } from "@metaplex-foundation/umi"
 import {
   DigitalAsset,
@@ -23,7 +23,7 @@ import {
 import {
   fetchAddressLookupTable, setComputeUnitPrice,
 } from "@metaplex-foundation/mpl-toolbox"
-import React, {Dispatch, SetStateAction} from "react"
+import React, {Dispatch, SetStateAction, useEffect, useState} from "react"
 import {
   chooseGuardToUse,
   routeBuilder,
@@ -185,7 +185,6 @@ const mintClick = async (
         requiredCu,
         false
       )
-      console.log(transaction)
       mintTxs.push(transaction)
     }
     if (!mintTxs.length) {
@@ -269,6 +268,7 @@ const mintClick = async (
 type Props = {
   text: String,
   mintAmount: number,
+  price: number
   chestType: string,
   umi: Umi,
   guardList: GuardReturn[],
@@ -294,6 +294,7 @@ type Props = {
 export function MintButton({
                              text,
                              mintAmount,
+                             price,
                              chestType,
                              umi,
                              guardList,
@@ -349,6 +350,16 @@ export function MintButton({
     buttonGuardList.push(buttonElement)
   }
 
+
+  useEffect(() => {
+    (async () => {
+      if (!umi) return
+      const solAmount = await umi.rpc.getBalance(umi.payer.publicKey)
+      setSol(amountToNumber(solAmount))
+    })()
+  }, [umi])
+  const [sol, setSol] = useState<number | null>(null)
+
   const listItems = buttonGuardList.map((buttonGuard, index) => (
     <VStack w={"100%"} alignItems={"start"} key={index}>
       <Button
@@ -379,7 +390,7 @@ export function MintButton({
         _active={{backgroundColor: "#DA9F21", boxShadow: "0 2px 0px #845536", transform: "translateY(3px)"}}
         textStyle="2xl"
         fontWeight="bold"
-        disabled={!buttonGuard.allowed}
+        disabled={(!buttonGuard.allowed || (sol ?? 1000) <= price)}
         loading={guardList.find((elem) => elem.label === buttonGuard.label)
           ?.loadingText != null}
         loadingText={guardList.find((elem) => elem.label === buttonGuard.label)
@@ -387,7 +398,9 @@ export function MintButton({
       >
         {text}
       </Button>
-      {!buttonGuard.allowed ? (<Text color={"#FF0000"}>{buttonGuard.tooltip}</Text>) : null}
+      {(!buttonGuard.allowed || (sol ?? 1000) <= price) ? (<Text color={"#FF0000"}>{
+        !buttonGuard.allowed ? buttonGuard.tooltip : "You don't have enough sol!"
+      }</Text>) : null}
     </VStack>
   ))
 

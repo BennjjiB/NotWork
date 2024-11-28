@@ -8,7 +8,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === "POST") {
     const data = req.body
     try {
-      await redis.hincrby(data.code, data.chestType, data.noOfChests)
+      const insertData = {code: data.code, chestType: data.chestType, noOfChests: data.noOfChests}
+      console.log(data)
+      await redis.hset(data.date, insertData)
       return res.status(200).end()
     } catch (e) {
       return res.status(405).end(`Data base did not work!`)

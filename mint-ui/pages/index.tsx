@@ -21,7 +21,7 @@ import {
   VStack,
   Flex,
   HStack,
-  For, Button
+  For, Center
 } from '@chakra-ui/react'
 import NextImage, {StaticImageData} from 'next/image'
 import '@solana/wallet-adapter-react-ui/styles.css'
@@ -33,7 +33,7 @@ import lord_chest_image from 'public/Lords_Chest.png'
 import king_chest_image from 'public/Kings_Chest.png'
 import referral_image from 'public/referral_image.png'
 import dynamic from "next/dynamic"
-import {toast, ToastContainer} from "react-toastify"
+import {ToastContainer} from "react-toastify"
 import 'react-toastify/dist/ReactToastify.css'
 import {StepperInput} from "../components/ui/stepper-input"
 import {useSolanaTime} from "../utils/SolanaTimeContext"
@@ -50,7 +50,7 @@ import {
 import {useOpenDialogListener} from "../utils/events"
 import {ClipboardIconButton, ClipboardInput, ClipboardRoot} from "../components/ui/clipboard"
 import {InputGroup} from "../components/ui/input-group"
-import {createReferralLink} from "../utils/referral"
+import {createReferralLink, registerReferralUsage} from "../utils/referral"
 import {useSearchParams} from "next/navigation"
 
 const WalletMultiButtonDynamic = dynamic(
@@ -78,7 +78,6 @@ const useCandyMachine = (
           console.error("No candy machine in .env!")
           return
         }
-
         let candyMachine
         try {
           candyMachine = await fetchCandyMachine(umi, publicKey(candyMachineId))
@@ -104,7 +103,7 @@ const useCandyMachine = (
         }
       }
     })()
-  }, [umi, checkEligibility])
+  }, [umi, candyMachineId, firstRun, setfirstRun, checkEligibility])
   return {candyMachine, candyGuard}
 }
 
@@ -179,7 +178,6 @@ export default function Home() {
 
   // ---------- UI ----------
   const [chestType, setChestType] = useState("Knight")
-  const [amount, setAmount] = useState("1")
 
   function getCandyMachine(name: string): CandyMachine {
     switch (name) {
@@ -220,17 +218,21 @@ export default function Home() {
     }
   }
 
-  function getButtonText(name: string): string {
+  function getPrice(name: string, amount: string): number {
     switch (name) {
       case "Knight":
-        return "Mint for 0.125 Sol"
+        return +amount * 0.125
       case "Lord":
-        return "Mint for 0.25 Sol"
+        return +amount * 0.25
       case "King":
-        return "Mint for 0.55 Sol"
+        return +amount * 0.55
       default:
-        return ""
+        return 0
     }
+  }
+
+  function getButtonText(name: string, amount: string): string {
+    return "Mint for " + getPrice(name, amount).toFixed(2) + "Sol"
   }
 
   function getDetailImage(name: string): StaticImageData {
@@ -279,6 +281,7 @@ export default function Home() {
   }
 
   const MintContent = () => {
+    const [amount, setAmount] = useState("1")
     return (
       <Flex direction="column" align="flex-start" gap={{base: "1rem"}} flex="1" h="100%">
         <VStack align="flex-start" gap="0.5rem">
@@ -320,8 +323,9 @@ export default function Home() {
           }}/>
         </VStack>
         <MintButton
-          text={getButtonText(chestType)}
+          text={getButtonText(chestType, amount)}
           mintAmount={+amount}
+          price={getPrice(chestType, amount)}
           guardList={guards}
           candyMachine={getCandyMachine(chestType)}
           candyGuard={getCandyGuard(chestType)}
@@ -403,7 +407,6 @@ export default function Home() {
         open={openDialog}
         onOpenChange={(e) => {
           if (!e.open) {
-            setAmount("1")
             setChestType("Knight")
             setDialogOpen(e.open)
           }
@@ -436,10 +439,13 @@ export default function Home() {
     )
   }
 
+  const dontShow = loading // || (new Date("Dec 10 2024 00:00:00").getTime() > new Date().getTime())
   return (
     <main>
-      {loading ? (<>
-        {useSearchParams().get('referralCode')}
+      {(dontShow) ? (<>
+        <Center h={"100%"}>
+          <Heading textStyle={"5xl"} className={styles.goldEffect}>The Otium mint will start on December 10</Heading>
+        </Center>
       </>) : (
         <div className={styles.content}>
           <PageContent></PageContent>

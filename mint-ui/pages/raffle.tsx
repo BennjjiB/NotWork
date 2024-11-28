@@ -1,59 +1,164 @@
 'use client'
-import React, {useState, useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import {useUmi} from "../utils/useUmi"
-import {amountToNumber} from "@metaplex-foundation/umi"
-import {Heading, HStack, Image, Stack, Text, VStack} from "@chakra-ui/react"
-import {fetchSolBalance, fetchTokenBalance} from "../utils/transactions"
-import NextImage, {StaticImageData} from "next/image"
+import {Heading, HStack, Image, Stack, Table, Text, VStack} from "@chakra-ui/react"
+import NextImage from "next/image"
 import raffle_title_image from 'public/RaffleTitle.png'
 import prices from 'public/RafflePrices.png'
 import ticket from 'public/RaffleTicket.png'
 import buttonImage from 'public/RaffleBuyBotton.png'
 import {Slider} from "../components/ui/slider"
-import {Table} from "@chakra-ui/react"
 import styles from "../styles/Home.module.css"
-import {useOpenDialogListener} from "../utils/events"
-import {
-  DialogBody,
-  DialogCloseTrigger,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogRoot
-} from "../components/ui/dialog"
-import referral_image from "../public/referral_image.png"
+import 'react-toastify/dist/ReactToastify.css'
+import {DialogBody, DialogCloseTrigger, DialogContent, DialogHeader, DialogRoot} from "../components/ui/dialog"
+import {toast, ToastContainer} from "react-toastify"
+import {publicKey, transactionBuilder, Umi} from "@metaplex-foundation/umi"
+import {findAssociatedTokenPda, safeFetchMint, safeFetchToken, transferTokens} from "@metaplex-foundation/mpl-toolbox"
+
+const RETRIEVER_WALLET_ADDRESS = publicKey('BT3H4W35yxnthWzpG332iME7NFgeyAJWJ1HvXr1252Zw') // Notwork receiver wallet address
+const SOLANA_NOTWORK_TOKEN = publicKey('GcdLTfPGhdsX6zVjmcLchwwECzYqATHgk64sKZuadHKF') // Notwork token address
+const SOLANA_NOTWORK_TOKEN_DECIMAL = BigInt(10 ** 9)
+
+export const fetchTokenBalance = async (umi: Umi) => {
+  try {
+    const associatedTokenAccount = findAssociatedTokenPda(umi, {
+      mint: SOLANA_NOTWORK_TOKEN,
+      owner: umi.payer.publicKey,
+    })
+    const mintData = await safeFetchMint(umi, SOLANA_NOTWORK_TOKEN)
+    const userPublicKeyData = await safeFetchToken(
+      umi,
+      associatedTokenAccount[0]
+    )
+    const balanceInLamports = userPublicKeyData?.amount
+
+    let uiBalance = BigInt(0)
+    if (balanceInLamports && mintData) {
+      uiBalance = balanceInLamports / BigInt(10 ** mintData?.decimals)
+    } else {
+      console.error("Balance or mint data not available.")
+    }
+    return Number(uiBalance)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const handleSendToken = async (umi: Umi, amountToSend: number) => {
+  const senderTokenAccount = findAssociatedTokenPda(umi, {
+    mint: SOLANA_NOTWORK_TOKEN,
+    owner: umi.payer.publicKey
+  })
+
+  const receiverTokenAccount = findAssociatedTokenPda(umi, {
+    mint: SOLANA_NOTWORK_TOKEN,
+    owner: RETRIEVER_WALLET_ADDRESS
+  })
+
+  let txnBuilder = transactionBuilder()
+  const amountToSendBigInt = BigInt(amountToSend) * SOLANA_NOTWORK_TOKEN_DECIMAL
+  const txn = transferTokens(umi, {
+    source: senderTokenAccount,
+    destination: receiverTokenAccount,
+    authority: umi.identity,
+    amount: amountToSendBigInt,
+  })
+  txnBuilder = txnBuilder.add(txn)
+  return txnBuilder.sendAndConfirm(umi, {send: {skipPreflight: true}})
+}
+
+async function registerRaffleTickets(pubAddress: string, tickets: number) {
+  const response = await fetch('/api/raffle', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      address: pubAddress,
+      tickets: tickets,
+      date: Date.now()
+    }),
+  })
+}
+
+async function getLeaderboard(address: string) {
+  const response = await fetch('/api/raffle?address=' + address, {
+    method: 'GET'
+  })
+  return await response.json()
+}
 
 export default function Raffle() {
   const umi = useUmi()
   const [notworkBalance, setNotworkBalance] = useState<number>(0) // Ensure it's typed as a number
+  const [loading, setLoading] = useState<boolean>(false) // Ensure it's typed as a number
 
   useEffect(() => {
     (async () => {
       if (!umi) return
       setNotworkBalance(await fetchTokenBalance(umi) ?? 0)
+      if (notworkBalance == 0) {
+        setNotworkBalance(await fetchTokenBalance(umi) ?? 0)
+      }
     })()
   }, [umi])
 
   const error = umi.payer.publicKey == "11111111111111111111111111111111" || notworkBalance == 0
-  const BuyButton = () => {
+
+  interface BuyButtonProps {
+    notworkAmount: number
+  }
+
+  async function buyTickets(notworkAmount: number) {
+    if (error || loading) return
+    setLoading(true)
+    toast.loading('Sending Transaction', {
+      autoClose: false,
+      hideProgressBar: false,
+      closeOnClick: false
+    })
+
+    await handleSendToken(umi, notworkAmount)
+      .then(result => {
+        toast.dismiss()
+        setLoading(false)
+        if (result.result.value.err) {
+          toast.error("Transaction failed", {
+            closeOnClick: true,
+            hideProgressBar: false,
+            autoClose: 2000
+          })
+        } else {
+          registerRaffleTickets(umi.payer.publicKey, notworkAmount / 1000)
+          setDialogOpen(true)
+        }
+      }).catch(error => {
+        toast.dismiss()
+        setLoading(false)
+        toast.error("Transaction failed", {
+          closeOnClick: true,
+          hideProgressBar: false,
+          autoClose: 2000
+        })
+      })
+  }
+
+  const BuyButton = (props: BuyButtonProps) => {
     return (
       <VStack gap={"0rem"}>
         <Image
-          onClick={
-            () => (async () => {
-              console.log("Sending")
-              //await handleSendToken(umi, "1000")
-            })()
-          }
+          onClick={async () => {
+            await buyTickets(props.notworkAmount)
+          }}
           w="100%"
           h={{base: "3rem", sm: "6rem", md: "4rem", lg: "6rem"}}
           fit="contain"
           alt="Title Image"
-          opacity={error ? "0.6" : "1"}
+          opacity={error || loading ? "0.6" : "1"}
           asChild
           transition="all .05s ease-in-out"
-          _hover={error ? {} : {filter: "drop-shadow(0 0 2.5rem rgb(255, 233, 0, 0.5))"}}
-          _active={error ? {} : {transform: "translateY(3px)"}}
+          _hover={error || loading ? {} : {filter: "drop-shadow(0 0 2.5rem rgb(255, 233, 0, 0.5))"}}
+          _active={error || loading ? {} : {transform: "translateY(3px)"}}
         >
           <NextImage src={buttonImage} alt={"Referral link image"}/>
         </Image>
@@ -71,10 +176,14 @@ export default function Raffle() {
 
   const [counter, setCounter] = React.useState("")
 
-  /*
   useEffect(() => {
-    let countDownDate = new Date("Jan 5, 2030 15:37:25").getTime()
-
+    let countDownDate = new Date("Dec 14, 2024 00:00:00").getTime()
+    let now = new Date().getTime()
+    let distance = countDownDate - now
+    while (distance < 0) {
+      countDownDate += 6.048e+8
+      distance = countDownDate - now
+    }
     let x = setInterval(function () {
       let now = new Date().getTime()
       let distance = countDownDate - now
@@ -83,15 +192,14 @@ export default function Raffle() {
       let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
       let seconds = Math.floor((distance % (1000 * 60)) / 1000)
 
-      setCounter(days + "d " + hours + "h " + minutes + "m " + seconds + "s ")
+      setCounter(days + " Days " + hours + " Hours " + minutes + " Minutes " + seconds + " Seconds ")
 
       if (distance < 0) {
         clearInterval(x)
-        setCounter("Finished")
+        countDownDate += 6.048e+8
       }
     }, 1000)
   }, [])
-*/
 
   interface TicketIndicatorProps {
     tickets: number
@@ -119,6 +227,7 @@ export default function Raffle() {
           <TicketIndicator tickets={tickets[0]}/>
           <VStack marginTop={{base: "-2rem", md: "-1rem", lg: "-2rem"}} w={"100%"}>
             <Slider
+              min={1}
               width="full"
               variant="outline"
               size="lg"
@@ -128,16 +237,18 @@ export default function Raffle() {
             <Text>{tickets} Tickets = {notworkAmount} $notwork</Text>
           </VStack>
         </VStack>
-        <BuyButton></BuyButton>
+        <BuyButton notworkAmount={notworkAmount}></BuyButton>
       </VStack>
     )
   }
 
-  const items = [
-    {id: 1, tickets: "Laptop", address: "Electronics"},
-    {id: 2, tickets: "Coffee Maker", address: "Home Appliances"},
-    {id: 3, tickets: "Desk Chair", address: "Furniture"},
-  ]
+  const [items, setItems] = useState<any[]>([])
+  useEffect(() => {
+    (async () => {
+      if (!umi || loading) return
+      setItems(await getLeaderboard(umi.payer.publicKey))
+    })()
+  }, [umi, loading, error])
 
   const LeaderBoard = () => {
     return (
@@ -151,8 +262,8 @@ export default function Raffle() {
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {items.map((item) => (
-              <Table.Row key={item.id}>
+            {items.map((item: any) => (
+              <Table.Row key={item.address}>
                 <Table.Cell>{item.tickets}</Table.Cell>
                 <Table.Cell>{item.address}</Table.Cell>
               </Table.Row>
@@ -165,11 +276,6 @@ export default function Raffle() {
 
 
   const RotatingTicket = () => {
-    const [MousePosition, setMousePosition] = useState({
-      left: 0,
-      top: 0
-    })
-
     function handleMouseMove(ev: React.MouseEvent) {
       const x = ev.clientX
       const y = ev.clientY
@@ -202,7 +308,7 @@ export default function Raffle() {
     )
   }
 
-  const [openDialog, setDialogOpen] = useState(true)
+  const [openDialog, setDialogOpen] = useState(false)
   const DialogView = () => {
     return (
       <DialogRoot
@@ -219,9 +325,12 @@ export default function Raffle() {
       >
         <DialogContent p="1rem" alignItems={"center"} gap={"1rem"} backgroundColor={"rgb(var(--background-rgb))"}>
           <DialogHeader display="flex" flexDirection="column" gap="0.5rem" alignItems={"center"}>
-            <Heading textAlign="center" textStyle={{base: "2xl", lg: "3xl"}}
-                     className={styles.goldEffect}>
-              Congratulations you've obtained!
+            <Heading
+              textAlign="center"
+              textStyle={{base: "2xl", lg: "3xl"}}
+              className={styles.goldEffect}
+            >
+              Congratulations you&apos;ve obtained!
             </Heading>
             <Heading textAlign="center" textStyle={{base: "3xl", lg: "4xl"}}>
               50 Tickets
@@ -237,7 +346,7 @@ export default function Raffle() {
   }
 
   return (
-    <div>
+    <div className={styles.content}>
       <VStack>
         <Image marginTop="1rem" h={{base: "8rem", xl: "12rem"}} fit="contain" alt="Title Image" asChild>
           <NextImage src={raffle_title_image} alt={"Referral link image"}/>
@@ -248,7 +357,7 @@ export default function Raffle() {
           textAlign={"center"}
           className={styles.goldEffect}
         >
-          Raffle ends in {new Date().toString()}
+          Raffle ends in {counter}
         </Heading>
         <VStack w="100%" gap={"4rem"}>
           <Stack direction={{base: "column", md: "row"}} w="80%" alignItems={"center"} gap={"4rem"}>
@@ -261,6 +370,16 @@ export default function Raffle() {
         </VStack>
       </VStack>
       <DialogView></DialogView>
+      <ToastContainer
+        position="bottom-right"
+        hideProgressBar={false}
+        newestOnTop={true}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </div>
   )
 }
