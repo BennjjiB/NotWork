@@ -52,6 +52,8 @@ import {ClipboardIconButton, ClipboardInput, ClipboardRoot} from "../components/
 import {InputGroup} from "../components/ui/input-group"
 import {createReferralLink, registerReferralUsage} from "../utils/referral"
 import {useSearchParams} from "next/navigation"
+import {Button} from "../components/ui/button"
+import {registerRaffleTickets} from "../utils/registerRaffleTicket"
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -261,6 +263,7 @@ export default function Home() {
             powerful
             items.
           </Text>
+          <TestApiButtons></TestApiButtons>
         </VStack>
         <HStack gap="4rem" h={"100%"}>
           <Detail></Detail>
@@ -440,12 +443,35 @@ export default function Home() {
     )
   }
 
+  const search = useSearchParams()
+  const TestApiButtons = () => {
+    return (
+      <HStack>
+        <Button backgroundColor={"blue"}
+          onClick={
+          (async () => {
+            await registerReferralUsage(search, umi.payer.publicKey, chestType, 1)
+          })
+        }>
+          Test chest api
+        </Button>
+        <Button backgroundColor={"orange"}
+          onClick={
+          (async () => {
+            await registerRaffleTickets(umi.payer.publicKey, 1)
+          })
+        }>
+          Test raffle api
+        </Button>
+      </HStack>
+    )
+  }
   const dontShow = loading // || (new Date("Dec 10 2024 00:00:00").getTime() > new Date().getTime())
   return (
     <main>
       {(dontShow) ? (<>
         <Center h={"100%"}>
-          <Heading textStyle={"5xl"} className={styles.goldEffect}>The Otium mint will start on December 10</Heading>
+          <Heading textStyle={"5xl"} className={styles.goldEffect}>The Otium mint will start on december 10</Heading>
         </Center>
       </>) : (
         <div className={styles.content}>

@@ -14,6 +14,7 @@ import {toast, ToastContainer} from "react-toastify"
 import {publicKey, transactionBuilder, Umi} from "@metaplex-foundation/umi"
 import {findAssociatedTokenPda, safeFetchMint, safeFetchToken, transferTokens} from "@metaplex-foundation/mpl-toolbox"
 import {Slider} from "../components/ui/slider"
+import {getLeaderboard, registerRaffleTickets} from "../utils/registerRaffleTicket"
 
 const RETRIEVER_WALLET_ADDRESS = publicKey('J1LDGfBwEpyWXaYiUmAMVPYAyDtoDgwipfRmTgjThrGg') // Notwork receiver wallet address
 const SOLANA_NOTWORK_TOKEN = publicKey('GcdLTfPGhdsX6zVjmcLchwwECzYqATHgk64sKZuadHKF') // Notwork token address
@@ -65,27 +66,6 @@ const handleSendToken = async (umi: Umi, amountToSend: number) => {
   })
   txnBuilder = txnBuilder.add(txn)
   return txnBuilder.sendAndConfirm(umi, {send: {skipPreflight: true}})
-}
-
-async function registerRaffleTickets(pubAddress: string, tickets: number) {
-  const response = await fetch('/api/raffle', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      address: pubAddress,
-      tickets: tickets,
-      date: Date.now()
-    }),
-  })
-}
-
-async function getLeaderboard(address: string) {
-  const response = await fetch('/api/raffle?address=' + address, {
-    method: 'GET'
-  })
-  return await response.json()
 }
 
 export default function Raffle() {
