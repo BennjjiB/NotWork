@@ -3,6 +3,7 @@ import {Redis} from '@upstash/redis'
 
 // Initialize Redis
 const redis = Redis.fromEnv()
+const noopSignerAddress = "11111111111111111111111111111111"
 
 function formatWalletAddress(address: string): string {
   if (address.length <= 12) {
@@ -28,18 +29,37 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const address = req.query.address?.toString()
       const members: string[] = await redis.zrange('scores', 0, 5)
-      let scores = await redis.zmscore("scores", members)
-      let leaderboard = scores?.map((num, index) => ({
-        address: formatWalletAddress(members[index]),
-        tickets: num,
-      }))?.sort((a, b) => b.tickets - a.tickets) ?? []
-      if (!address || !members.includes(address)) {
-        const score = await redis.zscore("scores", address)
+
+      // Filter out the noopSigner address from the leaderboard
+      const filteredMembers = members.filter((member) => member !== noopSignerAddress);
+
+      // Fetch scores for the filtered members
+      let scores = await redis.zmscore("scores", filteredMembers)
+
+      // create Leaderboard
+      // Create the leaderboard
+      let leaderboard =
+          scores
+              ?.map((num, index) => ({
+                address:
+                    filteredMembers[index] === address
+                        ? `YOU - ${formatWalletAddress(filteredMembers[index])}`
+                        : formatWalletAddress(filteredMembers[index]),
+                full_address: filteredMembers[index],
+                tickets: num,
+              }))
+              ?.sort((a, b) => b.tickets - a.tickets) ?? [];
+
+      // if address is not noopSigner and not in the leaderboard, add it
+      if (address && address !== noopSignerAddress && !filteredMembers.includes(address)) {
+        const score = await redis.zscore("scores", address);
         leaderboard.push({
-          address: formatWalletAddress(address ?? "You"),
-          tickets: score ?? 0
-        })
+          address: `YOU - ${formatWalletAddress(address)}`,
+          full_address: address,
+          tickets: score ?? 0,
+        });
       }
+
       return res.status(200).json(leaderboard)
     } catch (e) {
       return res.status(200).json({})

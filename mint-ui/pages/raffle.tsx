@@ -19,6 +19,8 @@ import {getLeaderboard, registerRaffleTickets} from "../utils/registerRaffleTick
 const RETRIEVER_WALLET_ADDRESS = publicKey('J1LDGfBwEpyWXaYiUmAMVPYAyDtoDgwipfRmTgjThrGg') // Notwork receiver wallet address
 const SOLANA_NOTWORK_TOKEN = publicKey('GcdLTfPGhdsX6zVjmcLchwwECzYqATHgk64sKZuadHKF') // Notwork token address
 const SOLANA_NOTWORK_TOKEN_DECIMAL = BigInt(10 ** 9)
+const NOTWORK_TOKENS_PER_RAFFEL = 100000
+const noopSignerAddress = "11111111111111111111111111111111"
 
 export const fetchTokenBalance = async (umi: Umi) => {
   try {
@@ -80,7 +82,7 @@ export default function Raffle() {
     })()
   }, [umi])
 
-  const error = umi.payer.publicKey == "11111111111111111111111111111111" || notworkBalance == 0
+  const error = umi.payer.publicKey == noopSignerAddress || notworkBalance == 0
 
   interface BuyButtonProps {
     notworkAmount: number
@@ -106,7 +108,7 @@ export default function Raffle() {
             autoClose: 2000
           })
         } else {
-          registerRaffleTickets(umi.payer.publicKey, notworkAmount / 1000)
+          registerRaffleTickets(umi.payer.publicKey, notworkAmount / NOTWORK_TOKENS_PER_RAFFEL)
           setDialogOpen(true)
         }
       }).catch(error => {
@@ -125,7 +127,7 @@ export default function Raffle() {
       <VStack gap={"0rem"}>
         <Image
           onClick={async () => {
-            setTicketsBought(props.notworkAmount / 1000)
+            setTicketsBought(props.notworkAmount / NOTWORK_TOKENS_PER_RAFFEL)
             await buyTickets(props.notworkAmount)
           }}
           w="100%"
@@ -143,7 +145,7 @@ export default function Raffle() {
         {
           (error) ? (
             <Text color={"#FF0000"}>{
-              (umi.payer.publicKey == "11111111111111111111111111111111") ?
+              (umi.payer.publicKey == noopSignerAddress) ?
                 "Please connect your wallet to enter the raffle" :
                 "You need $notwork to enter the raffle!"
             }</Text>) : null
@@ -171,7 +173,7 @@ export default function Raffle() {
   }
   const BuySection = () => {
     const [tickets, setTickets] = useState([1])
-    const notworkAmount = tickets[0] * 1000
+    const notworkAmount = tickets[0] * NOTWORK_TOKENS_PER_RAFFEL
     return (
       <VStack alignItems="center" gap={"2rem"}>
         <VStack alignItems="center" w={"100%"}>
@@ -185,7 +187,7 @@ export default function Raffle() {
               value={tickets}
               onValueChange={(e) => setTickets(e.value)}
             />
-            <Text>{tickets} Tickets = {notworkAmount} $notwork</Text>
+            <Text>{tickets} Tickets = {notworkAmount.toLocaleString("en-US")} $notwork</Text>
           </VStack>
         </VStack>
         <BuyButton notworkAmount={notworkAmount}></BuyButton>
@@ -201,30 +203,54 @@ export default function Raffle() {
     })()
   }, [umi, loading, error])
 
-  const LeaderBoard = () => {
-    return (
-      <VStack w={"100%"} gap={"1rem"} marginBottom={"2rem"}>
-        <Heading size={{base: "4xl", md: "5xl"}} className={styles.goldEffect}>Leaderboard</Heading>
-        <Table.Root variant={"outline"} size="lg" w={"75%"} className="dark">
-          <Table.Header>
-            <Table.Row>
-              <Table.ColumnHeader>Tickets</Table.ColumnHeader>
-              <Table.ColumnHeader>Address</Table.ColumnHeader>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {items.map((item: any) => (
-              <Table.Row key={item.address}>
-                <Table.Cell>{item.tickets}</Table.Cell>
-                <Table.Cell>{item.address}</Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table.Root>
-      </VStack>
-    )
-  }
 
+  const LeaderBoard = () => {
+    const currentAddress = umi?.payer?.publicKey
+        ? publicKey( umi.payer.publicKey.toString())
+        : null;
+
+    return (
+        <VStack w={"100%"} gap={"1rem"} marginBottom={"2rem"}>
+          <Heading size={{ base: "4xl", md: "5xl" }} className={styles.goldEffect}>
+            Leaderboard
+          </Heading>
+          <Table.Root variant={"outline"} size="lg" w={"75%"} className="dark">
+            <Table.Header>
+              <Table.Row>
+                <Table.ColumnHeader>Tickets</Table.ColumnHeader>
+                <Table.ColumnHeader>Address</Table.ColumnHeader>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {Array.isArray(items) && items.length > 0 ? (
+                  items.map((item: any) => {
+                    const isCurrentUser =
+                        currentAddress &&
+                        currentAddress !== noopSignerAddress &&
+                        currentAddress === item.full_address;
+
+                    return (
+                        <Table.Row
+                            key={item.address}
+                            className={isCurrentUser ? styles.goldEffect : ""}
+                        >
+                          <Table.Cell>{item.tickets}</Table.Cell>
+                          <Table.Cell>
+                            {item.address}
+                          </Table.Cell>
+                        </Table.Row>
+                    );
+                  })
+              ) : (
+                  <Table.Row>
+                    <Table.Cell colSpan={2}>No data available</Table.Cell>
+                  </Table.Row>
+              )}
+            </Table.Body>
+          </Table.Root>
+        </VStack>
+    );
+  };
 
   const RotatingTicket = () => {
     function handleMouseMove(ev: React.MouseEvent) {
