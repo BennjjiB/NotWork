@@ -31,7 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const members: string[] = await redis.zrange('scores', 0, 5)
 
       // Filter out the noopSigner address from the leaderboard
-      const filteredMembers = members.filter((member) => member !== noopSignerAddress);
+      const filteredMembers = members.filter((member) => member !== noopSignerAddress)
 
       // Fetch scores for the filtered members
       let scores = await redis.zmscore("scores", filteredMembers)
@@ -39,25 +39,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // create Leaderboard
       // Create the leaderboard
       let leaderboard =
-          scores
-              ?.map((num, index) => ({
-                address:
-                    filteredMembers[index] === address
-                        ? `YOU - ${formatWalletAddress(filteredMembers[index])}`
-                        : formatWalletAddress(filteredMembers[index]),
-                full_address: filteredMembers[index],
-                tickets: num,
-              }))
-              ?.sort((a, b) => b.tickets - a.tickets) ?? [];
+        scores
+          ?.map((num, index) => ({
+            address:
+              filteredMembers[index] === address
+                ? `You: ${formatWalletAddress(filteredMembers[index])}`
+                : formatWalletAddress(filteredMembers[index]),
+            full_address: filteredMembers[index],
+            tickets: num,
+          }))
+          ?.sort((a, b) => b.tickets - a.tickets) ?? []
 
       // if address is not noopSigner and not in the leaderboard, add it
       if (address && address !== noopSignerAddress && !filteredMembers.includes(address)) {
-        const score = await redis.zscore("scores", address);
+        const score = await redis.zscore("scores", address)
         leaderboard.push({
           address: `YOU - ${formatWalletAddress(address)}`,
           full_address: address,
           tickets: score ?? 0,
-        });
+        })
       }
 
       return res.status(200).json(leaderboard)
