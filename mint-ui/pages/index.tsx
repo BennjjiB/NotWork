@@ -32,7 +32,6 @@ import knight_chest_image from 'public/Knights_Chest.png'
 import lord_chest_image from 'public/Lords_Chest.png'
 import king_chest_image from 'public/Kings_Chest.png'
 import referral_image from 'public/referral_image.png'
-import dynamic from "next/dynamic"
 import {ToastContainer} from "react-toastify"
 import 'react-toastify/dist/ReactToastify.css'
 import {StepperInput} from "../components/ui/stepper-input"
@@ -54,12 +53,6 @@ import {createReferralLink, registerReferralUsage} from "../utils/referral"
 import {useSearchParams} from "next/navigation"
 import {Button} from "../components/ui/button"
 import {registerRaffleTickets} from "../utils/registerRaffleTicket"
-
-const WalletMultiButtonDynamic = dynamic(
-  async () =>
-    (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
-  {ssr: false}
-)
 
 // Fetches candy machines and guards
 const useCandyMachine = (
@@ -448,49 +441,49 @@ export default function Home() {
     return (
       <HStack>
         <Button backgroundColor={"blue"}
-          onClick={
-          (async () => {
-            await registerReferralUsage(search, umi.payer.publicKey, chestType, 1)
-          })
-        }>
+                onClick={
+                  (async () => {
+                    await registerReferralUsage(search, umi.payer.publicKey, chestType, 1)
+                  })
+                }>
           Test chest api
         </Button>
         <Button backgroundColor={"orange"}
-          onClick={
-          (async () => {
-            await registerRaffleTickets(umi.payer.publicKey, 1)
-          })
-        }>
+                onClick={
+                  (async () => {
+                    await registerRaffleTickets(umi.payer.publicKey, 1)
+                  })
+                }>
           Test raffle api
         </Button>
       </HStack>
     )
   }
-  const dontShow = loading // || (new Date("Dec 10 2024 00:00:00").getTime() > new Date().getTime())
+  const notStarted = false //(new Date("Dec 10 2024 00:00:00").getTime() > new Date().getTime())
   return (
     <main>
-      {(dontShow) ? (<>
+      {(notStarted) ? (
         <Center h={"100%"}>
           <Heading textStyle={"5xl"} className={styles.goldEffect}>The Otium mint will start on december 10</Heading>
         </Center>
-      </>) : (
-        <div className={styles.content}>
-          <PageContent></PageContent>
-          <DialogView></DialogView>
-          <ToastContainer
-            position="bottom-right"
-            autoClose={2000}
-            hideProgressBar
-            newestOnTop={true}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="dark"
-          />
-        </div>
-      )}
+      ) : loading ? (<></>) :
+        (<div className={styles.content}>
+            <PageContent></PageContent>
+            <DialogView></DialogView>
+            <ToastContainer
+              position="bottom-right"
+              autoClose={2000}
+              hideProgressBar
+              newestOnTop={true}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="dark"
+            />
+          </div>
+        )}
     </main>
   )
 }

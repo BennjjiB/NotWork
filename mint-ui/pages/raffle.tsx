@@ -1,7 +1,7 @@
 'use client'
 import React, {useEffect, useState} from 'react'
 import {useUmi} from "../utils/useUmi"
-import {Heading, HStack, Image, Stack, Table, Text, VStack} from "@chakra-ui/react"
+import {Center, Heading, HStack, Image, Stack, Table, Text, VStack} from "@chakra-ui/react"
 import NextImage from "next/image"
 import raffle_title_image from 'public/RaffleTitle.png'
 import prices from 'public/RafflePrices.png'
@@ -364,34 +364,40 @@ export default function Raffle() {
     )
   }
 
-  return (
-    <div className={styles.content}>
-      <VStack>
-        <Image marginTop="1rem" h={{base: "8rem", xl: "12rem"}} fit="contain" alt="Title Image" asChild>
-          <NextImage src={raffle_title_image} alt={"Referral link image"}/>
-        </Image>
-        <CountDown></CountDown>
-        <VStack w="100%" gap={"4rem"}>
-          <Stack direction={{base: "column", md: "row"}} w="90%" alignItems={"center"} gap={"4rem"}>
-            <Image w={{base: "80%", md: "60%"}} fit="contain" alt="Title Image" asChild>
-              <NextImage src={prices} alt={"Referral link image"}/>
-            </Image>
-            <BuySection></BuySection>
-          </Stack>
-          <LeaderBoard></LeaderBoard>
+  const notStarted = false //new Date("Dec 10 2024 00:00:00").getTime() > new Date().getTime()
+  return notStarted ? (
+      <Center h={"100%"}>
+        <Heading textStyle={"5xl"} className={styles.goldEffect}>The Otium raffle will start on december 10</Heading>
+      </Center>
+    ) :
+    (
+      <div className={styles.content}>
+        <VStack>
+          <Image marginTop="1rem" h={{base: "8rem", xl: "12rem"}} fit="contain" alt="Title Image" asChild>
+            <NextImage src={raffle_title_image} alt={"Referral link image"}/>
+          </Image>
+          <CountDown></CountDown>
+          <VStack w="100%" gap={"4rem"}>
+            <Stack direction={{base: "column", md: "row"}} w="90%" alignItems={"center"} gap={"4rem"}>
+              <Image w={{base: "80%", md: "60%"}} fit="contain" alt="Title Image" asChild>
+                <NextImage src={prices} alt={"Referral link image"}/>
+              </Image>
+              <BuySection></BuySection>
+            </Stack>
+            <LeaderBoard></LeaderBoard>
+          </VStack>
         </VStack>
-      </VStack>
-      <DialogView></DialogView>
-      <ToastContainer
-        position="bottom-right"
-        hideProgressBar={false}
-        newestOnTop={true}
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
-    </div>
-  )
+        <DialogView></DialogView>
+        <ToastContainer
+          position="bottom-right"
+          hideProgressBar={false}
+          newestOnTop={true}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        />
+      </div>
+    )
 }
