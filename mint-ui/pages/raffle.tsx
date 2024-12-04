@@ -19,7 +19,7 @@ import {getLeaderboard, registerRaffleTickets} from "../utils/registerRaffleTick
 const RETRIEVER_WALLET_ADDRESS = publicKey('J1LDGfBwEpyWXaYiUmAMVPYAyDtoDgwipfRmTgjThrGg') // Notwork receiver wallet address
 const SOLANA_NOTWORK_TOKEN = publicKey('GcdLTfPGhdsX6zVjmcLchwwECzYqATHgk64sKZuadHKF') // Notwork token address
 const SOLANA_NOTWORK_TOKEN_DECIMAL = BigInt(10 ** 9)
-const NOTWORK_TOKENS_PER_RAFFLE = 100000
+const NOTWORK_TOKENS_PER_RAFFLE = 50000
 const noopSignerAddress = "11111111111111111111111111111111"
 
 export const fetchTokenBalance = async (umi: Umi) => {

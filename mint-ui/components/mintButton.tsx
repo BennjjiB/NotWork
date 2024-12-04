@@ -11,22 +11,18 @@ import {
   createBigInt,
   generateSigner,
   publicKey,
-  signAllTransactions, amountToNumber,
+  signAllTransactions, amountToNumber, defaultPublicKey,
 } from "@metaplex-foundation/umi"
 import {
-  DigitalAsset,
   DigitalAssetWithToken,
   JsonMetadata,
-  fetchDigitalAsset,
-  fetchJsonMetadata,
 } from "@metaplex-foundation/mpl-token-metadata"
 import {
-  fetchAddressLookupTable, setComputeUnitPrice,
+  fetchAddressLookupTable
 } from "@metaplex-foundation/mpl-toolbox"
 import React, {Dispatch, SetStateAction, useEffect, useState} from "react"
 import {
   chooseGuardToUse,
-  routeBuilder,
   mintArgsBuilder,
   GuardButtonList,
   buildTx,
@@ -55,22 +51,6 @@ const updateLoadingText = (
   const newGuardList = [...guardList]
   newGuardList[guardIndex].loadingText = loadingText
   setGuardList(newGuardList)
-}
-
-const fetchNft = async (
-  umi: Umi,
-  notAddress: PublicKey,
-) => {
-  let digitalAsset: DigitalAsset | undefined
-  let jsonMetadata: JsonMetadata | undefined
-  try {
-    digitalAsset = await fetchDigitalAsset(umi, notAddress)
-    jsonMetadata = await fetchJsonMetadata(umi, digitalAsset.metadata.uri)
-  } catch (e) {
-    console.error(e)
-  }
-
-  return {digitalAsset, jsonMetadata}
 }
 
 const mintClick = async (
@@ -114,30 +94,6 @@ const mintClick = async (
     const newGuardList = [...guardList]
     newGuardList[guardIndex].minting = true
     setGuardList(newGuardList)
-
-    let routeBuild = await routeBuilder(umi, guardToUse, candyMachine)
-    if (routeBuild && routeBuild.items.length > 0) {
-      routeBuild = routeBuild.prepend(setComputeUnitPrice(umi, {microLamports: parseInt(process.env.NEXT_PUBLIC_MICROLAMPORTS ?? "1001")}))
-      const latestBlockhash = await umi.rpc.getLatestBlockhash({commitment: "finalized"})
-      routeBuild = routeBuild.setBlockhash(latestBlockhash)
-      const builtTx = await routeBuild.buildAndSign(umi)
-      const sig = await umi.rpc
-        .sendTransaction(builtTx, {
-          skipPreflight: true,
-          maxRetries: 1,
-          preflightCommitment: "finalized",
-          commitment: "finalized"
-        })
-        .then((signature) => {
-          return {status: "fulfilled", value: signature}
-        })
-        .catch((error) => {
-          return {status: "rejected", reason: error, value: new Uint8Array}
-        })
-      if (sig.status === "fulfilled")
-        await verifyTx(umi, [sig.value], latestBlockhash, "finalized")
-
-    }
 
     // fetch LUT
     let tables: AddressLookupTableInput[] = []
@@ -310,7 +266,7 @@ export function MintButton({
 
   useEffect(() => {
     (async () => {
-      if (!umi) return
+      if (!umi || umi.payer.publicKey == defaultPublicKey()) return
       const solAmount = await umi.rpc.getBalance(umi.payer.publicKey)
       setSol(amountToNumber(solAmount))
     })()

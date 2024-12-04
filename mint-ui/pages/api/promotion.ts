@@ -8,8 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === "POST") {
     const data = req.body
     try {
-      const insertData = {code: data.code, chestType: data.chestType, noOfChests: data.noOfChests}
-      console.log(data)
+      const insertData = {code: data.code, chestType: data.chestType, noOfChests: data.noOfChests, buyer: data.buyer}
       await redis.hset(data.date, insertData)
       return res.status(200).end()
     } catch (e) {

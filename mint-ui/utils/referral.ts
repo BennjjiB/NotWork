@@ -9,7 +9,7 @@ export async function registerReferralUsage(searchParams: ReadonlyURLSearchParam
     return
   }
 
-  const response = await fetch('/api/promotion', {
+  await fetch('/api/promotion', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -18,7 +18,8 @@ export async function registerReferralUsage(searchParams: ReadonlyURLSearchParam
       code: code,
       chestType: chestType,
       noOfChests: noOfChests,
-      date: Date.now()
+      date: Date.now(),
+      buyer: pubAddress
     }),
   })
 }

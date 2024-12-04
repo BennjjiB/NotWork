@@ -1,14 +1,9 @@
-import {allowLists} from "../allowlist"
 import {
   CandyGuard,
   CandyMachine,
   GuardGroup,
   DefaultGuardSet,
   DefaultGuardSetMintArgs,
-  getMerkleRoot,
-  route,
-  getMerkleProof,
-  safeFetchAllowListProofFromSeeds,
   mintV2,
 } from "@metaplex-foundation/mpl-candy-machine"
 import {
@@ -20,7 +15,6 @@ import {
   Umi,
   transactionBuilder,
   publicKey,
-  TransactionBuilder,
   none,
   AddressLookupTableInput,
   Transaction,
@@ -82,15 +76,6 @@ export const mintArgsBuilder = (
   let mintArgs: Partial<DefaultGuardSetMintArgs> = {}
   if (guards.allocation.__option === "Some") {
     mintArgs.allocation = some({id: guards.allocation.value.id})
-  }
-
-  if (guards.allowList.__option === "Some") {
-    const allowlist = allowLists.get(guardToUse.label)
-    if (!allowlist) {
-      console.error(`allowlist for guard ${guardToUse.label} not found!`)
-    } else {
-      mintArgs.allowList = some({merkleRoot: getMerkleRoot(allowlist)})
-    }
   }
 
   if (guards.freezeSolPayment.__option === "Some") {
@@ -257,74 +242,6 @@ export const mintArgsBuilder = (
     })
   }
   return mintArgs
-}
-
-// build route instruction for allowlist guard
-export const routeBuilder = async (
-  umi: Umi,
-  guardToUse: GuardGroup<DefaultGuardSet>,
-  candyMachine: CandyMachine
-) => {
-  let tx2 = transactionBuilder()
-
-  if (guardToUse.guards.allowList.__option === "Some") {
-    const allowlist = allowLists.get(guardToUse.label)
-    if (!allowlist) {
-      console.error("allowlist not found!")
-      return tx2
-    }
-    const allowListProof = await safeFetchAllowListProofFromSeeds(umi, {
-      candyGuard: candyMachine.mintAuthority,
-      candyMachine: candyMachine.publicKey,
-      merkleRoot: getMerkleRoot(allowlist),
-      user: publicKey(umi.identity),
-    })
-    if (allowListProof === null) {
-      tx2 = tx2.add(
-        route(umi, {
-          guard: "allowList",
-          candyMachine: candyMachine.publicKey,
-          candyGuard: candyMachine.mintAuthority,
-          group:
-            guardToUse.label === "default" ? none() : some(guardToUse.label),
-          routeArgs: {
-            path: "proof",
-            merkleRoot: getMerkleRoot(allowlist),
-            merkleProof: getMerkleProof(allowlist, publicKey(umi.identity)),
-          },
-        })
-      )
-    }
-    return tx2
-  }
-}
-
-// combine transactions. return TransactionBuilder[]
-export const combineTransactions = (
-  umi: Umi,
-  txs: TransactionBuilder[],
-  tables: AddressLookupTableInput[]
-) => {
-  const returnArray: TransactionBuilder[] = []
-  let builder = transactionBuilder()
-
-  // combine as many transactions as possible into one
-  for (let i = 0; i <= txs.length - 1; i++) {
-    const tx = txs[i]
-    let oldBuilder = builder
-    builder = builder.add(tx)
-
-    if (!builder.fitsInOneTransaction(umi)) {
-      oldBuilder = oldBuilder.setAddressLookupTables(tables)
-      returnArray.push(oldBuilder)
-      builder = new TransactionBuilder()
-      builder = builder.add(tx)
-    }
-    if (i === txs.length - 1) {
-      returnArray.push(builder)
-    }
-  }
-  return returnArray
 }
 
 export const buildTx = (

@@ -1,20 +1,8 @@
 import {
-  AddressGate,
   CandyGuard,
   CandyMachine,
-  EndDate,
-  FreezeSolPayment,
-  FreezeTokenPayment,
   GuardSet,
-  NftBurn,
-  NftGate,
-  NftPayment,
-  RedeemedAmount,
   SolPayment,
-  StartDate,
-  TokenBurn,
-  TokenGate,
-  TokenPayment,
 } from "@metaplex-foundation/mpl-candy-machine"
 import {
   SolAmount,
@@ -25,28 +13,19 @@ import {
   sol,
 } from "@metaplex-foundation/umi"
 import {
-  addressGateChecker,
-  allowlistChecker,
-  checkTokensRequired,
   checkSolBalanceRequired,
-  mintLimitChecker,
-  ownedNftChecker,
   GuardReturn,
-  allocationChecker,
   calculateMintable,
 } from "./checkerHelper"
-import {allowLists} from "../allowlist"
 import {
   DigitalAssetWithToken,
-  fetchAllDigitalAssetWithTokenByOwner,
 } from "@metaplex-foundation/mpl-token-metadata"
 import {checkAtaValid} from "./validateConfig"
 
 export const guardChecker = async (
   umi: Umi,
   candyGuard: CandyGuard,
-  candyMachine: CandyMachine,
-  solanaTime: bigint
+  candyMachine: CandyMachine
 ) => {
   let guardReturn: GuardReturn[] = []
   let ownedTokens: DigitalAssetWithToken[] = []
@@ -84,6 +63,7 @@ export const guardChecker = async (
   let solBalance: SolAmount = sol(0)
   if (checkSolBalanceRequired(guardsToCheck)) {
     try {
+      console.log("Get account")
       const account = await umi.rpc.getAccount(umi.identity.publicKey)
       assertAccountExists(account)
       solBalance = account.lamports
