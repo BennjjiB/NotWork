@@ -327,7 +327,7 @@ export default function Raffle() {
           <VStack w="100%" gap={"4rem"}>
             <Stack direction={{base: "column", md: "row"}} w="90%" alignItems={"center"} gap={"4rem"}>
               <Image w={{base: "80%", md: "60%"}} fit="contain" alt="Title Image" asChild>
-                <NextImage src={prices} alt={"Referral link image"}/>
+                <NextImage src={prices} priority alt={"Referral link image"}/>
               </Image>
               <BuySection></BuySection>
             </Stack>
