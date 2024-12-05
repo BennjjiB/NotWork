@@ -137,7 +137,7 @@ const mintClick = async (
     }
     setLoadingText(`Finalizing transaction`,)
 
-    const successfulMints = await verifyTx(umi, signatures, latestBlockhash, "finalized")
+    const successfulMints = await verifyTx(umi, signatures, latestBlockhash, "confirmed")
 
     // Referral Program Logic ----------------------
     if (successfulMints.length > 0) {
@@ -186,7 +186,7 @@ export function MintButton({
 
   const errorText = useMemo(() => {
     return umi.payer.publicKey == defaultPublicKey() ?
-      "Please connect your wallet to mint" : "You don't have enough sol!"
+      "Please connect your wallet to mint" : "You don't have enough $SOL!"
   }, [umi])
 
   return (
