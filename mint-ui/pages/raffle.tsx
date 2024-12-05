@@ -48,8 +48,8 @@ export default function Raffle() {
     await handleSendToken(umi, notworkAmount)
       .then(result => {
         toast.dismiss()
-        setLoading(false)
         if (result.result.value.err) {
+          setLoading(false)
           toast.error("Transaction failed", {
             closeOnClick: true,
             hideProgressBar: false,
@@ -57,6 +57,9 @@ export default function Raffle() {
           })
         } else {
           registerRaffleTickets(umi.payer.publicKey, notworkAmount / NOTWORK_TOKENS_PER_RAFFLE)
+            .then(() => {
+              setLoading(false)
+            })
           setDialogOpen(true)
         }
       }).catch(() => {

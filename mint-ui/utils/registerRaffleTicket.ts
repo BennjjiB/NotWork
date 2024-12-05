@@ -1,5 +1,5 @@
 export async function registerRaffleTickets(pubAddress: string, tickets: number) {
-  await fetch('/api/raffle', {
+  return await fetch('/api/raffle', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
