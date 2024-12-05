@@ -142,7 +142,7 @@ const mintClick = async (
     // Referral Program Logic ----------------------
     if (successfulMints.length > 0) {
       emitOpenDialog(true)
-      await registerReferralUsage(searchParams, umi.payer.publicKey, chestType, mintAmount)
+      await registerReferralUsage(searchParams, umi.payer.publicKey, chestType, successfulMints.length)
     }
   } catch (e) {
     console.error(`minting failed because of ${e}`)
