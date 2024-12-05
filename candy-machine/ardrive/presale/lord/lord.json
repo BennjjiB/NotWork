@@ -1,0 +1,51 @@
+{
+  "name": "Lord's Chest",
+  "symbol": "OT",
+  "description": "A chest filled with powerful items to begin your Otium adventure as a lord.",
+  "seller_fee_basis_points": 500,
+  "external_url": "https://playotium.com",
+  "image": "https://jpnehr5wll6e5p7s2mvsptmcfmoenzz6xrqyh5v534axblow4pzq.arweave.net/S9pDx7Za_E6_8tMrJ82CKxxG5z68YYP2vd8BcK3W4_M",
+  "properties": {
+    "files": [
+      {
+        "uri": "https://ysmou6qucgeapgz4sne4wk2swrp46g2p3avjv4zxyxa6lbegplbq.arweave.net/xJjqehQRiAebPJNJyytStF_PG0_YKprzN8XB5YSGesM",
+        "type": "image/png"
+      },
+      {
+        "uri": "https://jpnehr5wll6e5p7s2mvsptmcfmoenzz6xrqyh5v534axblow4pzq.arweave.net/S9pDx7Za_E6_8tMrJ82CKxxG5z68YYP2vd8BcK3W4_M",
+        "type": "image/gif"
+      }
+    ],
+    "category": "image"
+  },
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Lord"
+    },
+    {
+      "trait_type": "Card Packs",
+      "value": "5"
+    },
+    {
+      "trait_type": "Cardback",
+      "value": "Lord"
+    },
+    {
+      "trait_type": "Airdrop Boost",
+      "value": "Otium Chalice (5%)"
+    },
+    {
+      "trait_type": "Mythical Card Chance",
+      "value": "Medium"
+    },
+    {
+      "trait_type": "Version",
+      "value": "0"
+    }
+  ],
+  "collection": {
+    "verified": 1,
+    "key": "AfgLivczGEy9em6SUXLTy47Teq2aUG9rDnePrPgNmKme"
+  }
+}

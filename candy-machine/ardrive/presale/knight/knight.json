@@ -1,0 +1,51 @@
+{
+  "name": "Knight's Chest",
+  "symbol": "OT",
+  "description": "A chest filled with powerful items to begin your Otium adventure as a knight.",
+  "seller_fee_basis_points": 500,
+  "external_url": "https://playotium.com",
+  "image": "https://j35svxv7o27yukbp54pyw6ybvb65tpwjtdik3isrtyr6kmfqm67a.arweave.net/Tvsq3r92v4ooL-8fi3sBqH3ZvsmY0K2iUZ4j5TCwZ74",
+  "properties": {
+    "files": [
+      {
+        "uri": "https://wllbs7t5s6v7ecgdnwo63gh4xboktrexl752dfa525mgux6h4doq.arweave.net/stYZfn2Xq_IIw22d7Zj8uFypxJdf-6GUHddYal_H4N0",
+        "type": "image/png"
+      },
+      {
+        "uri": "https://j35svxv7o27yukbp54pyw6ybvb65tpwjtdik3isrtyr6kmfqm67a.arweave.net/Tvsq3r92v4ooL-8fi3sBqH3ZvsmY0K2iUZ4j5TCwZ74",
+        "type": "image/gif"
+      }
+    ],
+    "category": "image"
+  },
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Knight"
+    },
+    {
+      "trait_type": "Card Packs",
+      "value": "2"
+    },
+    {
+      "trait_type": "Cardback",
+      "value": "Knight"
+    },
+    {
+      "trait_type": "Airdrop Boost",
+      "value": "Otium Sword (2,5%)"
+    },
+    {
+      "trait_type": "Mythical Card Chance",
+      "value": "Low"
+    },
+    {
+      "trait_type": "Version",
+      "value": "0"
+    }
+  ],
+  "collection": {
+    "verified": 1,
+    "key": "AfgLivczGEy9em6SUXLTy47Teq2aUG9rDnePrPgNmKme"
+  }
+}

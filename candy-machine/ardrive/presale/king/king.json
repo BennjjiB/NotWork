@@ -1,0 +1,55 @@
+{
+  "name": "King's Chest",
+  "symbol": "OT",
+  "description": "A chest filled with powerful items to begin your Otium adventure as a king.",
+  "seller_fee_basis_points": 500,
+  "external_url": "https://playotium.com",
+  "image": "https://lyx7rqtse57iqf3djvy53expol37dj6kcl7z7d635imncbq5hwzq.arweave.net/Xi_4wnInfogXY01x3ZLvcvfxp8oS_5-P2-oY0QYdPbM",
+  "properties": {
+    "files": [
+      {
+        "uri": "https://pwpfpd7uklttnj5657e5crwfvg6rzc6qctulpy3xlkarxlubr3xq.arweave.net/fZ5Xj_RS5zanvu_J0UbFqb0ci9AU6Lfjd1qBG66Bju8",
+        "type": "image/png"
+      },
+      {
+        "uri": "https://lyx7rqtse57iqf3djvy53expol37dj6kcl7z7d635imncbq5hwzq.arweave.net/Xi_4wnInfogXY01x3ZLvcvfxp8oS_5-P2-oY0QYdPbM",
+        "type": "image/gif"
+      }
+    ],
+    "category": "image"
+  },
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "King"
+    },
+    {
+      "trait_type": "Card Packs",
+      "value": "10"
+    },
+    {
+      "trait_type": "Cardback",
+      "value": "King"
+    },
+    {
+      "trait_type": "Airdrop Boost",
+      "value": "Otium Crown (10%)"
+    },
+    {
+      "trait_type": "Relic",
+      "value": "Otium Sceptre (Free pack every season)"
+    },
+    {
+      "trait_type": "Mythical Card Chance",
+      "value": "Guaranteed"
+    },
+    {
+      "trait_type": "Version",
+      "value": "0"
+    }
+  ],
+  "collection": {
+    "verified": 1,
+    "key": "AfgLivczGEy9em6SUXLTy47Teq2aUG9rDnePrPgNmKme"
+  }
+}

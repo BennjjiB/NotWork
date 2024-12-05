@@ -81,3 +81,17 @@ button.wallet-adapter-button-trigger {
 button.wallet-adapter-button-trigger:hover {
     background-color: rgb(var(--hover-background-rgb)) !important;
 }
+
+.wallet {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+}
+
+@media (max-width: 50em) {
+    .wallet {
+        position: inherit;
+        margin-left: calc(100% - 200px);
+        margin-top: 3rem;
+    }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Otium Founder Chests",
+  "symbol": "OT",
+  "uri": "https://25ll223coer2fhfjcqpa5dwhf2gcs5ogfyz7nvinkknkahaoyh4q.arweave.net/11a9a2JxI6KcqRQeDo7HLowpdcYuM_bVDVKaoBwOwfk",
+  "seller_fee_basis_points": 100,
+  "creators": [
+    {
+      "address": "F3FMWiKpMec9o4kcVXXAzPdBqJVxt69zhUwPYruF47X4",
+      "verified": true,
+      "share": 100
+    }
+  ],
+  "collectionDetails": {
+    "version": "V1",
+    "size": 0
+  }
+}

@@ -1,9 +1,9 @@
 {
   "program": {
-    "candyMachine": "FYpEuxoacCKxPKHtv1Vsz8sTiEU6wX4cXNt1NKGHsPv3",
-    "candyGuard": "hMEy12nWvDrkhtKWr1JS9MU1XhVf8AmP6H5X7L6PQtz",
-    "candyMachineCreator": "FnCrMiCQ8AZr9bSGFFCBBMyxT5kkh8AvvgdHMz8dZpPE",
-    "collectionMint": "AWgQqu29H17ufeQt6fJT6obwD3HcFeqdW9cHt1x1Bj3G"
+    "candyMachine": "3NKLtqrn4KGbHae2tPTP43qMrHjdLv9AUyuVE3FrBpVR",
+    "candyGuard": "2wku2KywRy6D6bsar5xVWHs8oRTEwQME497BTcesRk77",
+    "candyMachineCreator": "HEDRZ2VHzmSJGQREjt5FYfMWwfKSRZizxgBMfE7yqmxx",
+    "collectionMint": "AfgLivczGEy9em6SUXLTy47Teq2aUG9rDnePrPgNmKme"
   },
   "items": {
     "-1": {
@@ -15,7 +15,7 @@
       "onChain": true
     },
     "0": {
-      "name": "Knight's Chest",
+      "name": "Lord's Chest",
       "image_hash": "32c79709b437f85555f751046971702368b5c2caf1f67873125b4f341420a365",
       "image_link": "https://drive.google.com/uc?export=view&id=1PU2N_SxUREZnLT6cGbEJCp_tQrC4r0io",
       "metadata_hash": "3df02c0fbc246324048a87c6cecac9353765307cc9425ae73ea9f6efcadace01",
