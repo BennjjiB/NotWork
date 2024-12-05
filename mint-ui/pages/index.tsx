@@ -5,7 +5,7 @@ import {
   publicKey,
   Umi,
 } from "@metaplex-foundation/umi"
-import React, {useEffect, useMemo, useRef, useState} from "react"
+import React, {useEffect, useMemo, useState} from "react"
 import {useUmi} from "../utils/useUmi"
 import {
   fetchCandyMachine,
@@ -47,10 +47,7 @@ import {
 import {useOpenDialogListener} from "../utils/events"
 import {ClipboardIconButton, ClipboardInput, ClipboardRoot} from "../components/ui/clipboard"
 import {InputGroup} from "../components/ui/input-group"
-import {createReferralLink, registerReferralUsage} from "../utils/referral"
-import {useSearchParams} from "next/navigation"
-import {Button} from "../components/ui/button"
-import {registerRaffleTickets} from "../utils/registerRaffleTicket"
+import {createReferralLink} from "../utils/referral"
 
 // Fetches candy machines and guards
 const useCandyMachine = (
@@ -216,7 +213,6 @@ export default function Home() {
             powerful
             items.
           </Text>
-          <TestApiButtons></TestApiButtons>
         </VStack>
         <HStack gap="4rem" h={"100%"}>
           <Detail></Detail>
@@ -393,29 +389,6 @@ export default function Home() {
     )
   }
 
-  const search = useSearchParams()
-  const TestApiButtons = () => {
-    return (
-      <HStack>
-        <Button backgroundColor={"blue"}
-                onClick={
-                  (async () => {
-                    await registerReferralUsage(search, umi.payer.publicKey, chestType, 1)
-                  })
-                }>
-          Test chest api
-        </Button>
-        <Button backgroundColor={"orange"}
-                onClick={
-                  (async () => {
-                    await registerRaffleTickets(umi.payer.publicKey, 1)
-                  })
-                }>
-          Test raffle api
-        </Button>
-      </HStack>
-    )
-  }
   const notStarted = false //(new Date("Dec 10 2024 00:00:00").getTime() > new Date().getTime())
   return (
     <main>
