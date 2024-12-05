@@ -187,7 +187,7 @@ export default function Home() {
   }
 
   function getButtonText(name: string, amount: string): string {
-    return "Mint for " + parseFloat(getPrice(name, amount).toFixed(3)) + " Sol"
+    return "Mint for " + parseFloat(getPrice(name, amount).toFixed(3)) + " $SOL"
   }
 
   function getDetailImage(name: string): StaticImageData {

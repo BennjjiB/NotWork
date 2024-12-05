@@ -9,12 +9,12 @@ import {
   Umi,
   generateSigner,
   publicKey,
-  signAllTransactions, amountToNumber, defaultPublicKey,
+  signAllTransactions, defaultPublicKey,
 } from "@metaplex-foundation/umi"
 import {
   fetchAddressLookupTable
 } from "@metaplex-foundation/mpl-toolbox"
-import React, {Dispatch, SetStateAction, useEffect, useMemo, useRef, useState} from "react"
+import React, {Dispatch, SetStateAction, useMemo, useState} from "react"
 import {
   chooseGuardToUse,
   mintArgsBuilder,
