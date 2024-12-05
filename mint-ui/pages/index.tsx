@@ -271,7 +271,7 @@ export default function Home() {
 
         <VStack align="flex-start" gap="0.5rem">
           <Heading textStyle={{base: "lg", "2xl": "2xl"}}>Amount</Heading>
-          <StepperInput color="white" min={1} value={amount} onValueChange={(details: any) => {
+          <StepperInput color="white" min={1} max={5} value={amount} onValueChange={(details: any) => {
             setAmount(details.value)
           }}/>
         </VStack>
