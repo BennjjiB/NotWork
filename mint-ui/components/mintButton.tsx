@@ -110,8 +110,8 @@ const mintClick = async (
         .sendTransaction(tx, {
           skipPreflight: true,
           maxRetries: 1,
-          preflightCommitment: "finalized",
-          commitment: "finalized"
+          preflightCommitment: "confirmed",
+          commitment: "confirmed"
         })
         .then((signature) => {
           console.log(
