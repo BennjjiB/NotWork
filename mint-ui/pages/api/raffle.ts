@@ -1,9 +1,9 @@
 import type {NextApiRequest, NextApiResponse} from "next"
 import {Redis} from '@upstash/redis'
+import {defaultPublicKey} from "@metaplex-foundation/umi"
 
 // Initialize Redis
 const redis = Redis.fromEnv()
-const noopSignerAddress = "11111111111111111111111111111111"
 
 function formatWalletAddress(address: string): string {
   if (address.length <= 12) {
@@ -31,7 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const members: string[] = await redis.zrange('scores', 0, 5)
 
       // Filter out the noopSigner address from the leaderboard
-      const filteredMembers = members.filter((member) => member !== noopSignerAddress)
+      const filteredMembers = members.filter((member) => member !== defaultPublicKey())
 
       // Fetch scores for the filtered members
       let scores = await redis.zmscore("scores", filteredMembers)
@@ -51,7 +51,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           ?.sort((a, b) => b.tickets - a.tickets) ?? []
 
       // if address is not noopSigner and not in the leaderboard, add it
-      if (address && address !== noopSignerAddress && !filteredMembers.includes(address)) {
+      if (address && address !== defaultPublicKey() && !filteredMembers.includes(address)) {
         const score = await redis.zscore("scores", address)
         leaderboard.push({
           address: `YOU - ${formatWalletAddress(address)}`,

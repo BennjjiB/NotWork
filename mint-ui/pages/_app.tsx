@@ -9,14 +9,9 @@ import "@solana/wallet-adapter-react-ui/styles.css"
 import {ChakraProvider, defaultSystem} from '@chakra-ui/react'
 import {image, headerText} from 'settings'
 import {UmiProvider} from "../utils/UmiProvider"
-import {SolanaTimeProvider} from "../utils/SolanaTimeContext"
 import dynamic from "next/dynamic"
 
 export default function App({Component, pageProps}: AppProps) {
-  let network = WalletAdapterNetwork.Devnet
-  if (process.env.NEXT_PUBLIC_ENVIRONMENT === "mainnet-beta" || process.env.NEXT_PUBLIC_ENVIRONMENT === "mainnet") {
-    network = WalletAdapterNetwork.Mainnet
-  }
   let endpoint = "https://api.devnet.solana.com"
   if (process.env.NEXT_PUBLIC_RPC) {
     endpoint = process.env.NEXT_PUBLIC_RPC
@@ -25,10 +20,8 @@ export default function App({Component, pageProps}: AppProps) {
     () => [],
     []
   )
-  const WalletMultiButtonDynamic = dynamic(
-    async () =>
-      (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
-    {ssr: false}
+  const WalletMultiButton = dynamic(() =>
+    import('@solana/wallet-adapter-react-ui').then(mod => mod.WalletMultiButton), {ssr: false}
   )
   return (
     <>
@@ -50,20 +43,18 @@ export default function App({Component, pageProps}: AppProps) {
         <title>{headerText}</title>
         <link rel="icon" href="/otium.png"/>
       </Head>
-      <ChakraProvider value={defaultSystem}>
-        <WalletProvider wallets={wallets}>
-          <UmiProvider endpoint={endpoint}>
-            <WalletModalProvider>
-              <SolanaTimeProvider>
-                <div className={"wallet"}>
-                  <WalletMultiButtonDynamic></WalletMultiButtonDynamic>
-                </div>
-                <Component {...pageProps} />
-              </SolanaTimeProvider>
-            </WalletModalProvider>
-          </UmiProvider>
-        </WalletProvider>
-      </ChakraProvider>
+      <WalletProvider wallets={wallets} autoConnect={true}>
+        <UmiProvider endpoint={endpoint}>
+          <WalletModalProvider>
+            <ChakraProvider value={defaultSystem}>
+              <div className={"wallet"}>
+                <WalletMultiButton></WalletMultiButton>
+              </div>
+              <Component {...pageProps} />
+            </ChakraProvider>
+          </WalletModalProvider>
+        </UmiProvider>
+      </WalletProvider>
     </>
   )
 }

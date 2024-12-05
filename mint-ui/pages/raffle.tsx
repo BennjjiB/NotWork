@@ -11,78 +11,26 @@ import styles from "../styles/Home.module.css"
 import 'react-toastify/dist/ReactToastify.css'
 import {DialogBody, DialogCloseTrigger, DialogContent, DialogHeader, DialogRoot} from "../components/ui/dialog"
 import {toast, ToastContainer} from "react-toastify"
-import {publicKey, transactionBuilder, Umi} from "@metaplex-foundation/umi"
-import {findAssociatedTokenPda, safeFetchMint, safeFetchToken, transferTokens} from "@metaplex-foundation/mpl-toolbox"
+import {defaultPublicKey, publicKey} from "@metaplex-foundation/umi"
 import {Slider} from "../components/ui/slider"
 import {getLeaderboard, registerRaffleTickets} from "../utils/registerRaffleTicket"
+import {fetchTokenBalance, handleSendToken} from "../utils/fetchAndSendToken"
 
-const RETRIEVER_WALLET_ADDRESS = publicKey('J1LDGfBwEpyWXaYiUmAMVPYAyDtoDgwipfRmTgjThrGg') // Notwork receiver wallet address
-const SOLANA_NOTWORK_TOKEN = publicKey('GcdLTfPGhdsX6zVjmcLchwwECzYqATHgk64sKZuadHKF') // Notwork token address
-const SOLANA_NOTWORK_TOKEN_DECIMAL = BigInt(10 ** 9)
 const NOTWORK_TOKENS_PER_RAFFLE = 50000
-const noopSignerAddress = "11111111111111111111111111111111"
-
-export const fetchTokenBalance = async (umi: Umi) => {
-  try {
-    const associatedTokenAccount = findAssociatedTokenPda(umi, {
-      mint: SOLANA_NOTWORK_TOKEN,
-      owner: umi.payer.publicKey,
-    })
-    const mintData = await safeFetchMint(umi, SOLANA_NOTWORK_TOKEN)
-    const userPublicKeyData = await safeFetchToken(
-      umi,
-      associatedTokenAccount[0]
-    )
-    const balanceInLamports = userPublicKeyData?.amount
-
-    let uiBalance = BigInt(0)
-    if (balanceInLamports && mintData) {
-      uiBalance = balanceInLamports / BigInt(10 ** mintData?.decimals)
-    } else {
-      console.error("Balance or mint data not available.")
-    }
-    return Number(uiBalance)
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-const handleSendToken = async (umi: Umi, amountToSend: number) => {
-  const senderTokenAccount = findAssociatedTokenPda(umi, {
-    mint: SOLANA_NOTWORK_TOKEN,
-    owner: umi.payer.publicKey
-  })
-
-  const receiverTokenAccount = findAssociatedTokenPda(umi, {
-    mint: SOLANA_NOTWORK_TOKEN,
-    owner: RETRIEVER_WALLET_ADDRESS
-  })
-
-  let txnBuilder = transactionBuilder()
-  const amountToSendBigInt = BigInt(amountToSend) * SOLANA_NOTWORK_TOKEN_DECIMAL
-  const txn = transferTokens(umi, {
-    source: senderTokenAccount,
-    destination: receiverTokenAccount,
-    authority: umi.identity,
-    amount: amountToSendBigInt,
-  })
-  txnBuilder = txnBuilder.add(txn)
-  return txnBuilder.sendAndConfirm(umi, {send: {skipPreflight: true}})
-}
 
 export default function Raffle() {
   const umi = useUmi()
-  const [notworkBalance, setNotworkBalance] = useState<number>(0) // Ensure it's typed as a number
-  const [loading, setLoading] = useState<boolean>(false) // Ensure it's typed as a number
+  const [notworkBalance, setNotworkBalance] = useState<number>(0)
+  const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
+    if (umi.payer.publicKey == defaultPublicKey() || loading) return
     (async () => {
-      if (!umi) return
       setNotworkBalance(await fetchTokenBalance(umi) ?? 0)
     })()
-  }, [umi])
+  }, [umi, loading])
 
-  const error = umi.payer.publicKey == noopSignerAddress || notworkBalance == 0
+  const error = umi.payer.publicKey == defaultPublicKey() || notworkBalance == 0
 
   interface BuyButtonProps {
     notworkAmount: number
@@ -111,7 +59,7 @@ export default function Raffle() {
           registerRaffleTickets(umi.payer.publicKey, notworkAmount / NOTWORK_TOKENS_PER_RAFFLE)
           setDialogOpen(true)
         }
-      }).catch(error => {
+      }).catch(() => {
         toast.dismiss()
         setLoading(false)
         toast.error("Transaction failed", {
@@ -145,7 +93,7 @@ export default function Raffle() {
         {
           (error) ? (
             <Text color={"#FF0000"}>{
-              (umi.payer.publicKey == noopSignerAddress) ?
+              (umi.payer.publicKey == defaultPublicKey()) ?
                 "Please connect your wallet to enter the raffle" :
                 "You need $notwork to enter the raffle!"
             }</Text>) : null
@@ -198,12 +146,11 @@ export default function Raffle() {
 
   const [items, setItems] = useState<any[]>([])
   useEffect(() => {
+    if (loading) return
     (async () => {
-      if (!umi || loading) return
       setItems(await getLeaderboard(umi.payer.publicKey))
     })()
-  }, [umi, loading, error])
-
+  }, [umi, loading])
 
   const LeaderBoard = () => {
     const currentAddress = umi?.payer?.publicKey
@@ -227,7 +174,7 @@ export default function Raffle() {
               items.map((item: any) => {
                 const isCurrentUser =
                   currentAddress &&
-                  currentAddress !== noopSignerAddress &&
+                  currentAddress !== defaultPublicKey() &&
                   currentAddress === item.full_address
 
                 return (
@@ -267,7 +214,7 @@ export default function Raffle() {
       document.documentElement.style.setProperty('--rotateY', offsetX.toString() + "deg")
     }
 
-    function handleMouseOut(ev: React.MouseEvent) {
+    function handleMouseOut() {
       document.documentElement.style.setProperty('--rotateX', "30deg")
       document.documentElement.style.setProperty('--rotateY', "-20deg")
     }

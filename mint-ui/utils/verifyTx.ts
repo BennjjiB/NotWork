@@ -1,6 +1,5 @@
 import {BlockhashWithExpiryBlockHeight, PublicKey, Umi} from "@metaplex-foundation/umi"
 import {toast} from "react-toastify"
-import {emitOpenDialog} from "./events"
 
 const detectBotTax = (logs: string[]) => {
   return !!logs.find((l) => l.includes("Candy Guard Botting"))

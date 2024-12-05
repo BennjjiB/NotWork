@@ -1,10 +1,11 @@
 import {
+  amountToNumber,
+  defaultPublicKey,
   PublicKey,
   publicKey,
   Umi,
 } from "@metaplex-foundation/umi"
-import {DigitalAssetWithToken, JsonMetadata} from "@metaplex-foundation/mpl-token-metadata"
-import React, {Dispatch, SetStateAction, useEffect, useMemo, useState} from "react"
+import React, {useEffect, useMemo, useRef, useState} from "react"
 import {useUmi} from "../utils/useUmi"
 import {
   fetchCandyMachine,
@@ -13,7 +14,6 @@ import {
   CandyMachine,
 } from "@metaplex-foundation/mpl-candy-machine"
 import styles from "../styles/Home.module.css"
-import {guardChecker} from "../utils/checkAllowed"
 import {
   Heading,
   Text,
@@ -35,8 +35,6 @@ import referral_image from 'public/referral_image.png'
 import {ToastContainer} from "react-toastify"
 import 'react-toastify/dist/ReactToastify.css'
 import {StepperInput} from "../components/ui/stepper-input"
-import {useSolanaTime} from "../utils/SolanaTimeContext"
-import {GuardReturn} from "../utils/checkerHelper"
 import {Tag} from "../components/ui/tag"
 import {MintButton} from "../components/mintButton"
 import {
@@ -57,67 +55,45 @@ import {registerRaffleTickets} from "../utils/registerRaffleTicket"
 // Fetches candy machines and guards
 const useCandyMachine = (
   umi: Umi,
-  candyMachineId: string,
-  checkEligibility: boolean,
-  setCheckEligibility: Dispatch<SetStateAction<boolean>>,
-  firstRun: boolean,
-  setfirstRun: Dispatch<SetStateAction<boolean>>
+  candyMachineId: PublicKey,
+  checkCandyMachines: boolean
 ) => {
   const [candyMachine, setCandyMachine] = useState<CandyMachine>()
   const [candyGuard, setCandyGuard] = useState<CandyGuard>()
 
   useEffect(() => {
     (async () => {
-      if (checkEligibility) {
-        if (!candyMachineId) {
-          console.error("No candy machine in .env!")
-          return
-        }
-        let candyMachine
+      if (checkCandyMachines && !(umi.payer.publicKey == defaultPublicKey())) {
+        let fetchedCandyMachine
         try {
-          candyMachine = await fetchCandyMachine(umi, publicKey(candyMachineId))
+          fetchedCandyMachine = await fetchCandyMachine(umi, candyMachineId)
         } catch (e) {
           console.error(e)
         }
-        setCandyMachine(candyMachine)
-        if (!candyMachine) {
+        if (!fetchedCandyMachine) {
           return
         }
-        let candyGuard
+        setCandyMachine(fetchedCandyMachine)
+
+        let fetchedCandyGuard
         try {
-          candyGuard = await safeFetchCandyGuard(umi, candyMachine.mintAuthority)
+          fetchedCandyGuard = await safeFetchCandyGuard(umi, fetchedCandyMachine.mintAuthority)
         } catch (e) {
           console.error(e)
         }
-        if (!candyGuard) {
+        if (!fetchedCandyGuard) {
           return
         }
-        setCandyGuard(candyGuard)
-        if (firstRun) {
-          setfirstRun(false)
-        }
+        setCandyGuard(fetchedCandyGuard)
       }
     })()
-  }, [umi, candyMachineId, firstRun, setfirstRun, checkEligibility])
+  }, [umi, candyMachineId, checkCandyMachines])
   return {candyMachine, candyGuard}
 }
 
 export default function Home() {
   const umi = useUmi()
-  const solanaTime = useSolanaTime()
-  const [mintsCreated, setMintsCreated] = useState<{
-    mint: PublicKey,
-    offChainMetadata: JsonMetadata | undefined
-  }[] | undefined>()
-  const [isAllowed, setIsAllowed] = useState<boolean>(false)
-  const [loading, setLoading] = useState(true)
-  const [ownedTokens, setOwnedTokens] = useState<DigitalAssetWithToken[]>()
-  const [guards, setGuards] = useState<GuardReturn[]>([
-    {label: "startDefault", allowed: false, maxAmount: 0},
-  ])
-  const [firstRun, setFirstRun] = useState(true)
-  const [checkEligibility, setCheckEligibility] = useState<boolean>(true)
-
+  const [checkingCandyMachines, setCheckingCandyMachines] = useState(true)
 
   // Computes the public key of candy machines
   const knightMachineId: PublicKey = useMemo(() => {
@@ -130,45 +106,29 @@ export default function Home() {
     return publicKey(process.env.NEXT_PUBLIC_KING_CANDY_MACHINE_ID!)
   }, [])
 
-  const knightCandyMachine = useCandyMachine(umi, knightMachineId, checkEligibility, setCheckEligibility, firstRun, setFirstRun)
-  const lordCandyMachine = useCandyMachine(umi, lordMachineId, checkEligibility, setCheckEligibility, firstRun, setFirstRun)
-  const kingCandyMachine = useCandyMachine(umi, kingMachineId, checkEligibility, setCheckEligibility, firstRun, setFirstRun)
-  // ---------------------------------
+  const knightCandyMachine = useCandyMachine(umi, knightMachineId, checkingCandyMachines)
+  const lordCandyMachine = useCandyMachine(umi, lordMachineId, checkingCandyMachines)
+  const kingCandyMachine = useCandyMachine(umi, kingMachineId, checkingCandyMachines)
 
+  // Set fetching all candy machines complete
   useEffect(() => {
-    const checkEligibilityFunc = async (candyMachine: CandyMachine | undefined, candyGuard: CandyGuard | undefined) => {
-      if (!candyMachine || !candyGuard || !checkEligibility) {
-        return
-      }
-      setFirstRun(false)
-
-      const {guardReturn, ownedTokens} = await guardChecker(
-        umi, candyGuard, candyMachine, solanaTime
-      )
-
-      setOwnedTokens(ownedTokens)
-      setGuards(guardReturn)
-      setIsAllowed(false)
-
-      // Checks if all guards are allowed
-      let allowed = false
-      for (const guard of guardReturn) {
-        if (guard.allowed) {
-          allowed = true
-          break
-        }
-      }
-
-      setIsAllowed(allowed)
-      setLoading(false)
+    const knightFetched = Object.values(knightCandyMachine).every(candy => candy)
+    const lordFetched = Object.values(lordCandyMachine).every(candy => candy)
+    const kingFetched = Object.values(knightCandyMachine).every(candy => candy)
+    if (knightFetched && lordFetched && kingFetched) {
+      setCheckingCandyMachines(false)
     }
+  }, [knightCandyMachine, lordCandyMachine, kingCandyMachine])
 
-    void checkEligibilityFunc(knightCandyMachine.candyMachine, knightCandyMachine.candyGuard)
-    void checkEligibilityFunc(lordCandyMachine.candyMachine, lordCandyMachine.candyGuard)
-    void checkEligibilityFunc(kingCandyMachine.candyMachine, kingCandyMachine.candyGuard)
-    // On purpose: not check for candyMachine, candyGuard, solanaTime
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [umi, checkEligibility, firstRun])
+  // Fetch Sol in wallet
+  const [sol, setSol] = useState<number | null>(null)
+  useEffect(() => {
+    if (umi.payer.publicKey == defaultPublicKey()) return
+    (async () => {
+      const solAmount = await umi.rpc.getBalance(umi.payer.publicKey)
+      setSol(amountToNumber(solAmount))
+    })()
+  }, [umi])
 
 
   // ---------- UI ----------
@@ -227,7 +187,7 @@ export default function Home() {
   }
 
   function getButtonText(name: string, amount: string): string {
-    return "Mint for " + getPrice(name, amount).toFixed(3) + "Sol"
+    return "Mint for " + parseFloat(getPrice(name, amount).toFixed(3)) + " Sol"
   }
 
   function getDetailImage(name: string): StaticImageData {
@@ -270,7 +230,7 @@ export default function Home() {
     return (
       <VStack hideBelow={"lg"} h="80%" flex="0.7" gap="4px">
         <Image h="100%" aspectRatio={4 / 3} fit="contain" alt="Avatar Image" asChild>
-          <NextImage src={getDetailImage(chestType)} alt={chestType}/>
+          <NextImage src={getDetailImage(chestType)} priority alt={chestType}/>
         </Image>
         <Heading size="3xl" className={styles.goldEffect}>{chestType}</Heading>
       </VStack>
@@ -322,17 +282,14 @@ export default function Home() {
         <MintButton
           text={getButtonText(chestType, amount)}
           mintAmount={+amount}
+          sol={sol}
           price={getPrice(chestType, amount)}
-          guardList={guards}
           candyMachine={getCandyMachine(chestType)}
           candyGuard={getCandyGuard(chestType)}
           umi={umi}
-          ownedTokens={ownedTokens}
-          setGuardList={setGuards}
-          mintsCreated={mintsCreated}
-          setMintsCreated={setMintsCreated}
-          setCheckEligibility={setCheckEligibility}
-          chestType={chestType}/>
+          chestType={chestType}
+          checkingCandyMachines={checkingCandyMachines}
+        />
       </Flex>
     )
   }
@@ -463,10 +420,10 @@ export default function Home() {
   return (
     <main>
       {(notStarted) ? (
-        <Center h={"100%"}>
-          <Heading textStyle={"5xl"} className={styles.goldEffect}>The Otium mint will start on december 10</Heading>
-        </Center>
-      ) : loading ? (<></>) :
+          <Center h={"100%"}>
+            <Heading textStyle={"5xl"} className={styles.goldEffect}>The Otium mint will start on december 10</Heading>
+          </Center>
+        ) :
         (<div className={styles.content}>
             <PageContent></PageContent>
             <DialogView></DialogView>
