@@ -50,5 +50,5 @@ export const handleSendToken = async (umi: Umi, amountToSend: number) => {
     amount: amountToSendBigInt,
   })
   txnBuilder = txnBuilder.add(txn)
-  return txnBuilder.sendAndConfirm(umi, {send: {skipPreflight: true}})
+  return txnBuilder.sendAndConfirm(umi, {send: {skipPreflight: true}, confirm: {commitment: "confirmed"}})
 }
