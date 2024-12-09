@@ -314,7 +314,7 @@ export default function Raffle() {
     )
   }
 
-  const notStarted = true //new Date("Dec 10 2024 00:00:00").getTime() > new Date().getTime()
+  const notStarted = false //new Date("Dec 10 2024 00:00:00").getTime() > new Date().getTime()
   return notStarted ? (
       <Center h={"100%"}>
         <Heading textStyle={"5xl"} className={styles.goldEffect}>The Otium raffle will start soon!</Heading>

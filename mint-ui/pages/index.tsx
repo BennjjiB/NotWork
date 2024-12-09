@@ -389,7 +389,7 @@ export default function Home() {
     )
   }
 
-  const notStarted = true //(new Date("Dec 10 2024 00:00:00").getTime() > new Date().getTime())
+  const notStarted = false //(new Date("Dec 10 2024 00:00:00").getTime() > new Date().getTime())
   return (
     <main>
       {(notStarted) ? (
