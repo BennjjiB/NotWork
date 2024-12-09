@@ -389,12 +389,12 @@ export default function Home() {
     )
   }
 
-  const notStarted = false //(new Date("Dec 10 2024 00:00:00").getTime() > new Date().getTime())
+  const notStarted = true //(new Date("Dec 10 2024 00:00:00").getTime() > new Date().getTime())
   return (
     <main>
       {(notStarted) ? (
           <Center h={"100%"}>
-            <Heading textStyle={"5xl"} className={styles.goldEffect}>The Otium mint will start on december 10</Heading>
+            <Heading textStyle={"5xl"} className={styles.goldEffect}>The Otium mint will start soon!</Heading>
           </Center>
         ) :
         (<div className={styles.content}>
